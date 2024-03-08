@@ -1,0 +1,16 @@
+Source: sabanto-modem-config
+Section: shells
+Priority: optional
+Maintainer: unknown <adam.gaynor@sabantoag.com>
+Build-Depends: debhelper-compat (= 12)
+Standards-Version: 4.4.1
+
+Package: sabanto-modem-config
+Architecture: arm64
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: This program reads a
+ list of AT commands. It sends those commands
+ one by one to the modem, waiting for the final
+ result code for the currently executing command
+ before continuing with the next command in the
+ list. The output from the commands is captured.
