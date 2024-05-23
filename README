@@ -1,3 +1,8 @@
+**Dependencies**
+http://ftp.de.debian.org/debian/pool/main/r/ruby-ronn/ruby-ronn_0.9.1-3_all.deb
+http://ftp.de.debian.org/debian/pool/main/r/ruby-ronn/ronn_0.9.1-3_all.deb
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Atinout is a program that will execute AT commands in sequence and
 capture the response from the modem.
