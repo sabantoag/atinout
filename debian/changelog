@@ -1,3 +1,9 @@
+sabanto-modem-config (0.9.2) focal; urgency=low
+
+  * Add missing AT commands 
+
+ -- Brian Moran <brian.moran@sabantoag.com>  Mon, 10 Jun 2024 11:08:09 -0600
+
 sabanto-modem-config (0.9.1) focal; urgency=low
 
   * Initial release

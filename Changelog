@@ -1,6 +1,10 @@
 
 Atinout changelog
 =================
+Version 0.9.2 (2024-06-10)
+----------------------------
+
+* Fixed the postinst script by adding in some missing AT commands.
 
 Version 0.9.1 (2013-09-08)
 ----------------------------
