@@ -1,20 +1,34 @@
 #!/bin/bash
 
 set -e
+SERIAL_PORT=/dev/ttyUSB3
+OLD_SETTINGS=$(stty -g -F ${SERIAL_PORT})
+stty -F ${SERIAL_PORT} -igncr -icrnl -ixon -ixoff
+stty -F /dev/ttyUSB2 "$OLD_SETTINGS"
 
-atinout - /dev/ttyUSB3 - <<EOF
-ATE0
-AT
-AT#ENAEVMONI=0
-AT#ENAEVMONICFG=3,1,2
-AT#EVMONI="SMSIN",0,1,"TEST"
-AT#EVMONI="SMSIN",0,0,"AT#GPIO=3,0,1"
-AT#EVMONI="SMSIN",1
-AT#EVMONI="GPIO3",0,1,3
-AT#EVMONI="GPIO3",0,2,0
-AT#EVMONI="GPIO3",0,0,"AT#GPIO=3,1,1"
-AT#EVMONI="GPIO3",1
-AT#ENAEVMONI=1
-EOF
+echo 'ATE0' | atinout - ${SERIAL_PORT} -
+sleep 0.1
+echo 'AT' | atinout - ${SERIAL_PORT} -
+sleep 0.1
+echo 'AT#ENAEVMONI=0' | atinout - ${SERIAL_PORT} -
+sleep 0.1
+echo 'AT#ENAEVMONICFG=3,1,2' | atinout - ${SERIAL_PORT} -
+sleep 0.1
+echo 'AT#EVMONI="SMSIN",0,1,"TEST"' | atinout - ${SERIAL_PORT} -
+sleep 0.1
+echo 'AT#EVMONI="SMSIN",0,0,"AT#GPIO=3,0,1"' | atinout - ${SERIAL_PORT} -
+sleep 0.1
+echo 'AT#EVMONI="SMSIN",1' | atinout - ${SERIAL_PORT} -
+sleep 0.1
+echo 'AT#EVMONI="GPIO3",0,1,3' | atinout - ${SERIAL_PORT} -
+sleep 0.1
+echo 'AT#EVMONI="GPIO3",0,2,0' | atinout - ${SERIAL_PORT} -
+sleep 0.1
+echo 'AT#EVMONI="GPIO3",0,0,"AT#GPIO=3,1,1"' | atinout - ${SERIAL_PORT} -
+sleep 0.1
+echo 'AT#EVMONI="GPIO3",1' | atinout - ${SERIAL_PORT} -
+sleep 0.1
+echo 'AT#ENAEVMONI=1' | atinout - ${SERIAL_PORT} -
+sleep 0.1
 
 exit 0
