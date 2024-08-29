@@ -3,12 +3,17 @@
 set -e
 SERIAL_PORT=/dev/ttyUSB3
 OLD_SETTINGS=$(stty -g -F ${SERIAL_PORT})
+# Configure the serial port for sending commands
 stty -F ${SERIAL_PORT} -igncr -icrnl -ixon -ixoff
+# Restore old settings
 stty -F /dev/ttyUSB2 "$OLD_SETTINGS"
 
+# Disable local echo
 echo 'ATE0' | atinout - ${SERIAL_PORT} -
 sleep 0.1
-echo 'AT' | atinout - ${SERIAL_PORT} -
+# Hide the output of this command since it is only used here
+# to clear the buffer if local echo was enabled prior to ATE0 being sent
+echo 'AT' | atinout - ${SERIAL_PORT} - > /dev/null
 sleep 0.1
 echo 'AT#ENAEVMONI=0' | atinout - ${SERIAL_PORT} -
 sleep 0.1

@@ -1,3 +1,9 @@
+sabanto-modem-config (0.9.4) focal; urgency=low
+
+  * remove the output of AT
+
+ -- Adam Gaynor <adam.gaynor@sabantoag.com>  Thu, 29 Aug 2024 09:57:09 -0600
+
 sabanto-modem-config (0.9.3) focal; urgency=low
 
   * Pass AT commands individually, fix parsing, fix serial options
