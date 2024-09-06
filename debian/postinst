@@ -54,5 +54,10 @@ echo 'AT#EVMONI="GPIO3",1' | atinout - ${SERIAL_PORT} -
 sleep 0.1
 echo 'AT#ENAEVMONI=1' | atinout - ${SERIAL_PORT} -
 sleep 0.1
+# Do not store text messages when received
+echo 'AT+CNMI=2,2,0,0,0' | atinout - ${SERIAL_PORT} -
+sleep 0.1
+# Clear out SMS storage in case spam texts were previously received
+echo 'AT+CMGD=1,4' | atinout - ${SERIAL_PORT} -
 
 exit 0
