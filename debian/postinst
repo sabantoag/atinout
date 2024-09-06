@@ -4,7 +4,26 @@ set -e
 SERIAL_PORT=/dev/ttyUSB3
 OLD_SETTINGS=$(stty -g -F ${SERIAL_PORT})
 # Configure the serial port for sending commands
-stty -F ${SERIAL_PORT} -igncr -icrnl -ixon -ixoff
+stty -F ${SERIAL_PORT} \
+-igncr \
+-icrnl \
+-ixon \
+-ixoff \
+-ignbrk \
+-brkint \
+-imaxbel \
+-opost \
+-onlcr \
+-isig \
+-icanon \
+-iexten \
+-echo \
+-echoe \
+-echok \
+-echoctl \
+-echoke \
+time 5 \
+min 1
 # Restore old settings
 stty -F /dev/ttyUSB2 "$OLD_SETTINGS"
 
