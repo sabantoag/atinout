@@ -1,3 +1,9 @@
+sabanto-modem-config (0.9.6) focal; urgency=medium
+
+  * Swap GPIO3 polarity in postinst script.
+
+ -- gaynoraj19 <27155636+gaynoraj19@users.noreply.github.com>  Thu, 12 Sep 2024 10:25:52 -0500
+
 sabanto-modem-config (0.9.5) focal; urgency=medium
 
   * Set all of the serial port parameters.
