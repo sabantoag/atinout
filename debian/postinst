@@ -25,7 +25,7 @@ stty -F ${SERIAL_PORT} \
 time 5 \
 min 1
 # Restore old settings
-stty -F /dev/ttyUSB2 "$OLD_SETTINGS"
+stty -F ${SERIAL_PORT} "$OLD_SETTINGS"
 
 # Disable local echo
 echo 'ATE0' | atinout - ${SERIAL_PORT} -

@@ -22,3 +22,6 @@ src/sabanto-pfm-config/debian/files
 src/sabanto-pfm-config/debian/debhelper-build-stamp
 # Ignore files generated when assembling the debian package
 debian/sabanto-modem-config
+# vscode folder
+.vscode
+
