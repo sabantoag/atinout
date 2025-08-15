@@ -61,5 +61,8 @@ echo 'AT+CNMI=2,2,0,0,0' | atinout - ${SERIAL_PORT} -
 sleep 0.1
 # Clear out SMS storage in case spam texts were previously received
 echo 'AT+CMGD=1,4' | atinout - ${SERIAL_PORT} -
+sleep 0.1
+# Save settings to nonvolatile storage
+echo 'AT&W' | atinout - ${SERIAL_PORT} -
 
 exit 0
