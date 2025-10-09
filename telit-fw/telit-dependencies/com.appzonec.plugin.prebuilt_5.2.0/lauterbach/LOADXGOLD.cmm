@@ -1,0 +1,148 @@
+;/*******************************************************************
+;*
+;*       (C) TELIT - TELECOMMUNICATIONS  - INFINEON TECHNOLOGIES - COMMUNICATIONS
+
+;*
+;*    FILE:          LOADXGOLD.cmm             CC_VERSION: v1.1
+;*
+;*    AUTHOR:        APA Telit semplified IFCX COM CV , LKS
+;*
+;*    DESCRIPTION:	 AZ T32 will load it
+;*
+;*    DEVICE:		 XGOLD626 or XGOLD213, depend on PLATFORM
+;*
+;*    HISTORY:
+;*
+;*    main/1 12.06.2007 IFCX COM CV , LKS : created
+;*
+;*******************************************************************/
+
+
+GLOBAL &sec_acc_status
+
+;UNUSED, CLOSE, OPEN
+&sec_acc_status="UNUSED"
+
+         
+     ;if &MY_FONTSIZE==0
+      ; menu.reset
+       
+     ;wait 10ms  
+     ;winsmall.area.select DBG_AREA
+     
+     //***************************************  LTE ***************************************************************
+     // find if it is LTE prod
+     IF (&LTEflag==1)
+     (
+       &lteDebugPath="&AZ_PATH/XGOLD716/Per_File"
+       ; let the per file path default to the XG716 ES1 variant
+       &ltePerFilePath="&lteDebugPath/XGOLD716E1_LTE"
+         
+       if ("&board"=="xg716e2"||"&board"=="xg716e2_fpga")
+       (
+         &ltePerFilePath="&AZ_PATH/XGOLD716/Per_File/XGOLD716E2_LTE"
+       )
+       if ("&board"=="xg716e3"||"&board"=="xg716e3_fpga")
+       (
+         &ltePerFilePath="&AZ_PATH/XGOLD716/Per_File/XGOLD716E3_LTE"
+       )
+       
+       ; Default for real silicon (will be changed for FPGA depending on subsystem and board variables)
+       &ltePerFile="&ltePerFilePath/bwcAlbert4Jam2.per"
+           //menu.reset
+       menu.reprogram
+       (&
+          add
+          toolbar
+          (
+            separator
+            toolitem "" "  " "DO &AZ_PATH/XGOLD626/void.cmm"
+            toolitem "" "  " "DO &AZ_PATH/XGOLD626/void.cmm"
+            separator
+            toolitem "platform in debug" "4G,R" "DO &AZ_PATH/XGOLD626/void.cmm"
+            toolitem "use right icon button" "->,R" "DO &AZ_PATH/XGOLD626/void.cmm"
+            toolitem "" "  " "DO &AZ_PATH/XGOLD626/void.cmm"
+            
+            toolitem "AppZone Settings" "pconfig"  "DO &AZ_PATH/Set_dialog.cmm"
+            toolitem "Break Point" "BP,G" "Pedit &AZ_PATH/APPZONE/BreakPointSet.cmm "
+            toolitem "Reset System" "RS,B" "DO &AZ_PATH/XGOLD716/reset_sys4G.cmm"
+            toolitem "Reset AppZone" "pulselow" "DO &AZ_PATH/APPZONE/AppZoneCpuReset.cmm"
+            toolitem "Start Modem"  "init"     "DO &AZ_PATH/APPZONE/AppZone.cmm 0"
+            toolitem "Start M2M App"   "on"       "DO &AZ_PATH/APPZONE/AppZone.cmm 1"
+            toolitem "" "  " "DO &AZ_PATH/XGOLD626/void.cmm"
+            toolitem "M2M autorun"  "rightpage2"   "DO &AZ_PATH/APPZONE/autostart.cmm"
+            toolitem "Go"  "goc"      "go"
+
+            separator
+            
+          )
+       )
+        Chdir &AZ_PATH
+        DO &AZ_PATH/XGOLD716/LOADXGOLD716.cmm
+        //Chdir &AZ_PATH/XGOLD716/LOADXGOLD716.cmm     
+     )
+     ELSE
+     (
+     //***************************************  NON LTE ***************************************************************
+        IF "&PLAT"=="TELIT_2G_I"
+        (
+           menu.reprogram
+           (&
+               add
+               toolbar
+               (    
+                  separator
+                  toolitem "" "  " "DO &AZ_PATH/XGOLD626/void.cmm"
+                  toolitem "" "  " "DO &AZ_PATH/XGOLD626/void.cmm"
+                  separator
+                  toolitem "platform in debug" "2G,R" "DO &AZ_PATH/XGOLD626/void.cmm"
+                  toolitem "use right icon button" "->,R" "DO &AZ_PATH/XGOLD626/void.cmm"
+                  toolitem "" "  " "DO &AZ_PATH/XGOLD626/void.cmm"
+                  
+                  toolitem "AppZone Settings" "pconfig"  "DO &AZ_PATH/Set_dialog.cmm"
+                  toolitem "Break Point" "BP,G" "Pedit &AZ_PATH/APPZONE/BreakPointSet.cmm "
+                  toolitem "Reset System" "RS,B" "DO &AZ_PATH/XGOLD626/reset_sys.cmm"
+                  toolitem "Reset AppZone" "pulselow" "DO &AZ_PATH/APPZONE/AppZoneCpuReset.cmm"
+                  toolitem "Start Modem"  "init"     "DO &AZ_PATH/APPZONE/AppZone.cmm 0"
+                  toolitem "Start M2M App"   "on"       "DO &AZ_PATH/APPZONE/AppZone.cmm 1"
+                  toolitem "" "  " "DO &AZ_PATH/XGOLD626/void.cmm"
+                  toolitem "M2M autorun"  "rightpage2"   "DO &AZ_PATH/APPZONE/autostart.cmm"
+                  toolitem "Go"  "goc"      "go"
+
+                  separator
+               )
+           )
+          DO &AZ_PATH\XGOLD213\LOADXGOLD213.cmm 0  
+        )
+        ELSE 
+        (
+            menu.reprogram
+            (&
+                add
+                toolbar
+                 (
+                    separator
+                    toolitem "" "  " "DO &AZ_PATH/XGOLD626/void.cmm"
+                    toolitem "" "  " "DO &AZ_PATH/XGOLD626/void.cmm"
+                    separator
+                    toolitem "platform in debug" "3G,R" "DO &AZ_PATH/XGOLD626/void.cmm"
+                    toolitem "use right icon button" "->,R" "DO &AZ_PATH/XGOLD626/void.cmm"
+                    toolitem "" "  " "DO &AZ_PATH/XGOLD626/void.cmm"
+                    toolitem "AppZone Settings" "pconfig"  "DO &AZ_PATH/Set_dialog.cmm"
+                    toolitem "Break Point" "BP,G" "Pedit &AZ_PATH/APPZONE/BreakPointSet.cmm "
+                    toolitem "Reset System" "RS,B" "DO &AZ_PATH/XGOLD626/reset_sys.cmm"
+                    toolitem "Reset AppZone" "pulselow" "DO &AZ_PATH/APPZONE/AppZoneCpuReset.cmm"
+                    toolitem "Start Modem"  "init"     "DO &AZ_PATH/APPZONE/AppZone.cmm 0"
+                    toolitem "Start M2M App"   "on"       "DO &AZ_PATH/APPZONE/AppZone.cmm 1"
+                    toolitem "" "  " "DO &AZ_PATH/XGOLD626/void.cmm"
+                    toolitem "M2M autorun"  "rightpage2"   "DO &AZ_PATH/APPZONE/autostart.cmm"
+                    toolitem "Go"  "goc"      "go"
+                    separator
+                 )
+            )
+          DO &AZ_PATH/XGOLD626/LOADXGOLD626.cmm 0  
+          DO &AZ_PATH/XGOLD626/REG_INLCUDE.cmm
+        )
+    )
+
+Chdir &AZ_PATH

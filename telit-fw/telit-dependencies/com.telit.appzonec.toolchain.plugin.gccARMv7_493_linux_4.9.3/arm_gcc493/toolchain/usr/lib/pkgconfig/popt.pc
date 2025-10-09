@@ -1,0 +1,10 @@
+prefix=/jenhome/jenkins/jobs/LE910Cx_Multi_DAILY/workspace/build/apps_proc/poky/build/tmp-glibc/sysroots/x86_64-linux/usr
+exec_prefix=/jenhome/jenkins/jobs/LE910Cx_Multi_DAILY/workspace/build/apps_proc/poky/build/tmp-glibc/sysroots/x86_64-linux/usr
+libdir=/jenhome/jenkins/jobs/LE910Cx_Multi_DAILY/workspace/build/apps_proc/poky/build/tmp-glibc/sysroots/x86_64-linux/usr/lib
+includedir=/jenhome/jenkins/jobs/LE910Cx_Multi_DAILY/workspace/build/apps_proc/poky/build/tmp-glibc/sysroots/x86_64-linux/usr/include
+
+Name: popt
+Version: 1.16
+Description: popt library.
+Libs: -L${libdir} -lpopt
+Cflags: -I${includedir}

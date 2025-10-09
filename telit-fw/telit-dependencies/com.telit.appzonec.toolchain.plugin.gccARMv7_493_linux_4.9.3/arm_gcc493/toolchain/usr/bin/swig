@@ -1,0 +1,4 @@
+#!/bin/bash
+realpath=`readlink -fn $0`
+export SWIG_LIB=`dirname $realpath`/../share/swig/3.0.6
+exec -a `dirname $realpath`/swig `dirname $realpath`/swig.real "$@"

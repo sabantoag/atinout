@@ -1,0 +1,11 @@
+prefix=/jenhome/jenkins/jobs/LE910Cx_Multi_DAILY/workspace/build/apps_proc/poky/build/tmp-glibc/sysroots/x86_64-linux/usr
+exec_prefix=/jenhome/jenkins/jobs/LE910Cx_Multi_DAILY/workspace/build/apps_proc/poky/build/tmp-glibc/sysroots/x86_64-linux/usr
+libdir=/jenhome/jenkins/jobs/LE910Cx_Multi_DAILY/workspace/build/apps_proc/poky/build/tmp-glibc/sysroots/x86_64-linux/usr/lib
+toolexeclibdir=/jenhome/jenkins/jobs/LE910Cx_Multi_DAILY/workspace/build/apps_proc/poky/build/tmp-glibc/sysroots/x86_64-linux/usr/lib/../lib
+includedir=${libdir}/libffi-3.2.1/include
+
+Name: libffi
+Description: Library supporting Foreign Function Interfaces
+Version: 3.2.1
+Libs: -L${toolexeclibdir} -lffi
+Cflags: -I${includedir}

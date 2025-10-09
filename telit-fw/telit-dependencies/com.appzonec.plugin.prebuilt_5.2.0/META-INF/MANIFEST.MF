@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: AppZoneC Prebuilt files
+Bundle-SymbolicName: com.appzonec.plugin.prebuilt;singleton:=true
+Bundle-Version: 5.2.0
+Bundle-Vendor: Telit
+Bundle-RequiredExecutionEnvironment: JavaSE-11

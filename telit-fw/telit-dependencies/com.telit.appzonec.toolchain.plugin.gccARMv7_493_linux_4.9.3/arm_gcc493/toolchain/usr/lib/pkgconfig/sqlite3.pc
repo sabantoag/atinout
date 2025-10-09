@@ -1,0 +1,13 @@
+# Package Information for pkg-config
+
+prefix=/jenhome/jenkins/jobs/LE910Cx_Multi_DAILY/workspace/build/apps_proc/poky/build/tmp-glibc/sysroots/x86_64-linux/usr
+exec_prefix=/jenhome/jenkins/jobs/LE910Cx_Multi_DAILY/workspace/build/apps_proc/poky/build/tmp-glibc/sysroots/x86_64-linux/usr
+libdir=/jenhome/jenkins/jobs/LE910Cx_Multi_DAILY/workspace/build/apps_proc/poky/build/tmp-glibc/sysroots/x86_64-linux/usr/lib
+includedir=/jenhome/jenkins/jobs/LE910Cx_Multi_DAILY/workspace/build/apps_proc/poky/build/tmp-glibc/sysroots/x86_64-linux/usr/include
+
+Name: SQLite
+Description: SQL database engine
+Version: 3.8.10.2
+Libs: -L${libdir} -lsqlite3
+Libs.private: -ldl -lpthread 
+Cflags: -I${includedir}

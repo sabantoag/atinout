@@ -1,0 +1,12 @@
+prefix=/jenhome/jenkins/jobs/LE910Cx_Multi_DAILY/workspace/build/apps_proc/poky/build/tmp-glibc/sysroots/x86_64-linux/usr
+exec_prefix=/jenhome/jenkins/jobs/LE910Cx_Multi_DAILY/workspace/build/apps_proc/poky/build/tmp-glibc/sysroots/x86_64-linux/usr
+libdir=/jenhome/jenkins/jobs/LE910Cx_Multi_DAILY/workspace/build/apps_proc/poky/build/tmp-glibc/sysroots/x86_64-linux/lib
+includedir=/jenhome/jenkins/jobs/LE910Cx_Multi_DAILY/workspace/build/apps_proc/poky/build/tmp-glibc/sysroots/x86_64-linux/usr/include
+
+Name: com_err
+Description: Common error description library
+Version: 1.42.9
+Requires:
+Cflags: -I${includedir}/et -I${includedir}
+Libs: -L${libdir} -lcom_err
+Libs.private: -lpthread

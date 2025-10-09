@@ -1,0 +1,4 @@
+#!/bin/bash
+realpath=`readlink -fn $0`
+export MKE2FS_CONFIG=/jenhome/jenkins/jobs/LE910Cx_Multi_DAILY/workspace/build/apps_proc/poky/build/tmp-glibc/sysroots/x86_64-linux/etc/mke2fs.conf
+exec -a `dirname $realpath`/mke2fs `dirname $realpath`/mke2fs.real "$@"

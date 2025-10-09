@@ -1,0 +1,346 @@
+
+LOCAL &CURDIR 
+LOCAL &PROD &path &FS &Aztmp
+LOCAL &entryoption &entrypar
+
+ENTRY &entryoption &entrypar
+
+IF ("&entrypar"=="")
+  &entrypar=""
+  
+&CURDIR=OS.PPD()
+
+IF (&entryoption==1)
+(
+  GOTO CreateDefaultFile
+  ENDDO
+)
+ELSE
+(
+  IF (&entryoption==2)
+  (
+    IF ("&entrypar"!="")
+    (
+      //&entrypar is the temporary product 
+      GOSUB ConvertToTelit &entrypar &entryoption  ; <-- only get actual conversion, without modify
+      ENTRY &retvalue
+      ENDDO &retvalue   //return telit conversion
+    )
+    GOSUB ConvertToTelit &PRODUCT   ; <--- has to be gobal PRODUCT here! Already read from file
+    ENTRY &TELIT_PROD
+    ENDDO
+  )
+  ELSE
+  (
+    //check only the product: used if T32 called via SDK
+    IF (&entryoption==3)
+    (
+      GOSUB ConvertToTelit &PRODUCT 
+      ENTRY &TELIT_PROD 
+      ENDDO
+    )  
+  )
+   
+)
+
+  
+Tryopen:
+IF OS.FILE("&CURDIR\AppZone.ini")   //FILE.EXIST()
+(  
+  LOCAL &Res
+  
+    //get Aztmp working directory
+  GOSUB findItemInFile "TMP=" &CURDIR\config_AZ.t32
+  ENTRY &Aztmp
+  //extract "only" the drive letters: example C: or E: ...
+  &Aztmp=STRING.MID("&Aztmp",0.,2.)
+  //&t32tmpdir="&Aztmp\T32\temp\AZtmp" //example if C: -> &t32tmpdir="C:/T32/temp/AZtmp"
+  &t32tmpdir="&SYS_PATH\temp\AZtmp"
+  IF (!OS.DIR(&t32tmpdir))
+  (
+    //MKDIR &t32tmpdir
+    OS.Command mkdir &t32tmpdir
+  )
+  GOSUB findItemInFile "PRODUCT=" &CURDIR\AppZone.ini
+  ENTRY &PROD
+  
+  GOSUB ConvertToTelit &PROD
+  ENTRY &TELIT_PROD
+  
+    ;  //check if the product is one of the list  
+    ;  GOSUB checkvalue &AV_PRODS &PROD
+    ;  ENTRY &Res
+    ;  
+    ;  //product founf
+    ;  IF (&Res==-10)
+    ;    &PRODUCT="&PROD"
+    ;  ELSE
+    ;    &PRODUCT=""
+  
+  
+  
+  //IF (&Res>-10)
+  //(
+  //  //the product was not found
+  //  PRINT %ERROR "Product " "&PROD" " not available"
+  //  DIALOG.MESSAGE "Product <<&PROD>> not available!!" " " "Please check file " "&CURDIR\AppZone.ini"
+  //  RETURN -1
+  //)
+    
+  GOSUB findItemInFile "ECLIPSE_PROJECT_PATH=" &CURDIR\AppZone.ini
+  ENTRY &path
+  &ECLIPSE_PROJECT_PATH="&path"
+
+  GOSUB findItemInFile "FONTSIZE=" &CURDIR\AppZone.ini
+  ENTRY &FS
+  IF "&FS"!=""
+  (
+    
+    &FS=STRing.LoWeR("&FS")
+    
+    //check if the font is one of the list 
+    GOSUB checkvalue &FS_AVAIL &FS
+    ENTRY &Res
+    
+    //Font size found
+    IF (&Res==-10)
+       &MY_FONTSIZE="&FS"
+    ELSE
+       &MY_FONTSIZE=""
+       
+    //IF (&Res>-10)
+    //(
+    //  //the product was not found
+    //  PRINT %ERROR "FontSize " "&FS" " not available"
+    //  DIALOG.MESSAGE "FontSize <<&FS>> not available!!" " " "Please check file " "&CURDIR\AppZone.ini" " " " Filesize will be set as default"
+    //                
+    //  &FS="small"
+    //)
+  )
+  ELSE
+  (
+    &MY_FONTSIZE=""
+  )
+)
+ELSE
+(
+   DIALOG.MESSAGE "File <<&CURDIR\AppZone.ini>> not found!!!" \
+                   " " "New default file will be generated"
+   &MY_FONTSIZE=""
+   &PRODUCT=""
+   &ECLIPSE_PROJECT_PATH=""
+   GOSUB CreateDefaultFile
+   GOTO endend
+   
+   //GOTO Tryopen
+) 
+
+&readPROD="&PROD"
+&readFS="&FS"
+
+;GOSUB ConvertToTelit &PRODUCT
+
+// 13.00.00x  ->  GE910-AZ
+// 13.00.10x  ->  GE910-GNSS-AZ
+// 12.00.00x  ->  HE910_G-AZ
+// 12.00.41x  ->  UE910_EUD-AZ
+// 12.00.92x  ->  UE910_EUD-AZ_64R_64F
+
+endend:
+ENDDO
+
+/////////////////////// SUBROUTINE //////////////////////////////////////////////////
+findItemInFile:
+  LOCAL &strpar &filename &stop &file_line &locCURDIR &outStr
+  ENTRY &strpar &filename
+  &locCURDIR=OS.PPD()
+  //beacuse it is in the same directory
+  //OPEN #1 &locCURDIR\AppZone.ini /Read
+  OPEN #1 &filename /Read
+  &stop=0
+  WHILE &stop<1.
+  (
+    READ #1 %line &file_line
+    &outStr=""
+    &outStr=STRing.SCANAndExtract("&file_line",&strpar,"")
+    IF  ("&outStr"!="")
+      &stop=1
+    IF EOF()
+      &stop=1
+  )
+  IF ("&outStr"!="")
+  (
+    //unfortunately end defined by whitespace, so this code never occurs
+    &outStr=STRING.TRIM("&outStr")
+  )  
+  ELSE
+  (
+    //&locCURDIR=OS.PPD()
+    //PRINT %ERROR "&strpar" " not found in file " "&locCURDIR" "\AppZone.ini"  
+    //DIALOG.MESSAGE "<< &strpar >> not found!!!" " " "Please check file " "&locCURDIR\AppZone.ini" " OR set it using GUI"
+  )
+  CLOSE #1
+  RETURN &outStr 
+  
+///////////////////////////////////////////////// 
+checkvalue:
+  LOCAL &LIST_ITEMS &ITEM &chkstr &step &commaPos &prec 
+  ENTRY &LIST_ITEMS &ITEM
+  //check if the ITEM is one of the LIST_ITEMS  
+  &chkstr=0 
+  &step=0
+  &commaPos=0
+  &prec=0
+  WHILE &chkstr>-1
+  (
+    &step=&step+&chkstr
+    //scan inside the list the product, step as starting point
+    &chkstr=STRING.SCAN("&LIST_ITEMS","&ITEM",&step)  
+    IF (&chkstr>-1)
+    (
+      IF (&chkstr==0)
+        &commaPos=0
+      ELSE
+      (
+        &commaPos=STRING.SCAN("&LIST_ITEMS",",",0)
+        &prec=&commaPos
+        WHILE (&commaPos<&chkstr)
+        (
+          &prec=&commaPos
+          &commaPos=STRING.SCAN("&LIST_ITEMS",",",&step+&prec+1)
+          IF (&commaPos<0)
+            &commaPos=&chkstr  //just to exit
+        )
+        &commaPos=&prec+1  //keep on using same &commaPos
+      )
+
+      //item separated by "," = 0x2C
+      IF (&chkstr==&commaPos)
+      (
+        IF (STRING.CHAR("&LIST_ITEMS",&chkstr+STRING.LEN("&ITEM"))==0x2C)
+          &chkstr=-10
+        ELSE
+          &step=&step+1       
+      )
+    ) 
+  )
+  RETURN &chkstr
+  
+//
+
+
+//******************************************************************//******************************************************************
+// See prod_matrx on T32_AZ_start.cmm
+// input: product as 20.00.42x , options ...
+ConvertToTelit:
+  LOCAL &locstr &option &loc_TELIT_PROD
+  LOCAL &rowstring &ind &loc_prod &ref_prod 
+  LOCAL &familyprod &prod_id &found
+  ENTRY &prod &option
+  
+  IF ("&option"=="")  //not option set
+    &option="0"
+  
+  &locstr=STRing.Lower("&prod")
+  IF (STRing.LENgth("&locstr")!=9)
+  (
+    IF (&option!=2)
+      &PRODUCT=""
+      
+    &loc_TELIT_PROD=""
+      RETURN &loc_TELIT_PROD
+  )
+      
+  &familyprod=STRing.MID("&locstr",0.,2.) // 12.00.417 =>         get 12
+  &prod_id=STRing.MID("&locstr",6.,2.)    // 12.00.417 => 12.00.  get 41
+  //&ref_prod=STRing.CUT("&locstr",-1)
+  &ind="x"
+  &ref_prod="&familyprod.xx.&prod_id&ind"   // now standard 12.xx.42x
+  
+  // MAX_N_PROD is globally defined in T32_AZ_start.cmm, number of rows
+  
+  &ind=0
+  &found=0
+  WHILE ((&ind<&MAX_N_PROD)&&(&found==0))
+  (
+    &rowstring=Var.STRing(\prod_matrx[&ind])
+    //extract product from matrix
+    &loc_prod=STRing.SCANAndExtract("&rowstring","P=","")
+    IF (STRING.SCAN("&loc_prod","&ref_prod",0)==-1)
+    (
+      &ind=&ind+1.
+    )
+    ELSE
+    (
+      &found=1.
+    )
+  )
+  //var.IF &ind<(sizeof(\prod_matrx)/128.)
+  IF (&ind<&MAX_N_PROD)
+  (
+    IF (&option==2)
+      &loc_prod="&PRODUCT"
+    
+    //extract &LTEflag from matrix: if LTE product, LTE=1
+    &LTEflag=STRing.SCANAndExtract("&rowstring","LTE=","0")    
+    //extract used TELIT_PROD as axf file
+    &loc_TELIT_PROD=STRing.SCANAndExtract("&rowstring","TP=","")
+  )
+  ELSE
+  (
+    IF (&ind>=&MAX_N_PROD)
+      DIALOG.MESSAGE "PRODUCT: &prod => REFERENCE: &ref_prod  NOT FOUND"
+      
+    &loc_prod=""
+    &loc_TELIT_PROD=""
+  )
+  &PRODUCT="&loc_prod"
+  RETURN &loc_TELIT_PROD 
+
+
+//******************************************************************  
+CreateDefaultFile:
+LOCAL &rowstring &ind &p_str &axf_pref
+OPEN #1 &CURDIR\AppZone.ini /Create
+
+WRITE #1 "//GENERAL PROJECT SETTINGS FOR T32 DEBUG"
+WRITE #1 "//no space after =, space or return are considered as parameters end"
+WRITE #1 "//PRODUCTS CODE   |  AXF_FILE(prod_name.axf) "
+&ind=0.
+
+&rowstring=Var.STRing(\prod_matrx[0])
+&p_str=STRing.SCANAndExtract("&rowstring","P=","")
+&axf_pref=STRing.SCANAndExtract("&rowstring","TP=","")
+&axf_pref="&axf_pref.axf"
+WRITE #1 "//&p_str       |  &axf_pref"
+&ind=&ind+1.
+WHILE (&ind<&MAX_N_PROD)
+(
+  &rowstring=Var.STRing(\prod_matrx[&ind])
+  &p_str=STRing.SCANAndExtract("&rowstring","P=","")
+  &axf_pref=STRing.SCANAndExtract("&rowstring","TP=","")
+  &axf_pref="&axf_pref.axf"
+  WRITE #1 "//&p_str       |  &axf_pref"
+  &ind=&ind+1.
+)
+WRITE #1 ""
+WRITE #1 "//FONTS: &FS_AVAIL"     ; small - normal - large"
+WRITE #1 "// <x> in PRODUCTS CODE means relative figures are ignored:"
+WRITE #1 "// e.g 12.01.418 , or 12.00.417 are considered as 12.xx.41x "
+WRITE #1 ""
+//set current values
+IF (&entryoption==1)
+(
+  WRITE #1 "PRODUCT=&PRODUCT"
+  WRITE #1 "ECLIPSE_PROJECT_PATH=&ECLIPSE_PROJECT_PATH"
+  WRITE #1 "FONTSIZE=&MY_FONTSIZE"
+)
+ELSE
+(
+  //set defaults
+  WRITE #1 "PRODUCT=12.xx.92x"
+  WRITE #1 "ECLIPSE_PROJECT_PATH=C:\"
+  WRITE #1 "FONTSIZE=small"
+)
+CLOSE #1
+ENDDO

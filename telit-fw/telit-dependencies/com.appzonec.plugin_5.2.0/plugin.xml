@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.startup">
+      <startup
+            class="com.appzonec.plugin.Startup">
+      </startup>
+   </extension>
+   <extension
+         id="com.appzonec.plugin.natures.ProjectNature"
+         point="org.eclipse.core.resources.natures">
+      <runtime>
+         <run
+               class="com.appzonec.plugin.natures.ProjectNature">
+         </run>
+      </runtime>
+   </extension>
+   <extension point="org.eclipse.ui.propertyPages">
+	    <page
+	        adaptable="true"
+	        class="com.appzonec.plugin.wizards.ProjectPropertyPage"
+	        id="com.appzonec.plugin.ProjectPropertyPage"
+	        name="AppZone"
+	        nameFilter="*"
+	        objectClass="org.eclipse.core.resources.IProject">
+	        <enabledWhen>
+	             <adapt type="org.eclipse.core.resources.IProject">
+		             <test
+		                property="org.eclipse.core.resources.projectNature"
+		                value="com.appzonec.plugin.natures.ProjectNature" />
+	              </adapt>
+	        </enabledWhen>
+	     </page>
+    </extension>
+    
+    <extension point="org.eclipse.ui.menus">
+		<menuContribution
+		        locationURI="popup:common.new.menu?before=additions">
+		     <command
+		           commandId="com.telit.newLibraryCommand"
+		           label="Telit Library"
+		           icon="icons/00_AppZone_16.png"
+		           style="push">
+		           <!--<visibleWhen checkEnabled="false">
+		            	<with variable="activeWorkbenchWindow.activePerspective">
+		                	<equals value="com.telit.appzone.azperspect.cperspective"/>
+		            	</with>
+		           </visibleWhen>-->
+		     </command>
+		  </menuContribution>
+		 
+			  <menuContribution
+		        locationURI="menu:new">
+		     <command
+		           commandId="com.telit.newLibraryCommand"
+		           label="Telit Library"
+		           icon="icons/00_AppZone_16.png"
+		           style="push">
+		           <!--<visibleWhen checkEnabled="false">
+		            	<with variable="activeWorkbenchWindow.activePerspective">
+		                	<equals value="com.telit.appzone.azperspect.cperspective"/>
+		            	</with>
+		           </visibleWhen>-->
+		     </command>
+		  </menuContribution>
+      </extension>
+    
+</plugin>
