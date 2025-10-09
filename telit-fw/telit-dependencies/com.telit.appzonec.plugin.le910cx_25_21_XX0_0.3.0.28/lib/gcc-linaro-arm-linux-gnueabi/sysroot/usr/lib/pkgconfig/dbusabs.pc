@@ -1,0 +1,10 @@
+prefix=/usr
+exec_prefix=/usr
+libdir=/usr/lib
+includedir=/usr/include
+
+Name: dbusabs
+Description: D-Bus abstraction
+Version: 
+Libs: -L${libdir} -ldbusabs
+Cflags: -I${includedir}/dbusabs

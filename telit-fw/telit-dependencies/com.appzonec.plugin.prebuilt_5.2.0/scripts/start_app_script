@@ -1,0 +1,33 @@
+#! /bin/sh
+
+#  ---------------------------------------------------------------------------
+#   				CM Application TELIT DAEMON
+#  ---------------------------------------------------------------------------
+
+# init.d script for cm_application daemon
+
+set -e
+
+case "$1" in
+  start)
+    echo -n "Starting cm_application"
+    start-stop-daemon --start --background --name cm_application --startas /data/az/cm_application
+    echo "done"
+    ;;
+  stop)
+    echo -n "Stopping cm_application: "
+    start-stop-daemon --stop --name cm_application
+    echo "done"
+    ;;
+  restart)
+    $0 stop
+    $0 start
+    ;;
+  *)
+    echo "Usage: cm_application { start | stop | restart}" >&2
+    exit 1
+    ;;
+esac
+
+exit 0
+

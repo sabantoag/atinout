@@ -1,0 +1,10 @@
+prefix=/usr
+exec_prefix=/usr
+libdir=/usr/lib
+includedir=/usr/include
+
+Name: tlog
+Description: Telit Log
+Version: 1.0.0
+Libs: -L${libdir} -ltlog
+Cflags: -I${includedir}/tlog

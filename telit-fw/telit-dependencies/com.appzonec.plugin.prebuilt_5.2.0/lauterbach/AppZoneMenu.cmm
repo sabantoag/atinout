@@ -1,0 +1,108 @@
+MENU.RESET
+WINCLEAR
+;Add some extra buttons to the toolbar
+IF ("&MY_FONTSIZE"=="small")
+(
+    menu.rp
+    (
+      add
+      toolbar
+      (
+      separator
+      toolitem "Source/List" "list" "Winsmall.Data.List"
+      toolitem "Memory Dump" "dump" "Winsmall.Data.dump"
+      toolitem "Register" "reg" "Winsmall.Register"
+      separator
+      toolitem "Watch" ":varwatch" "Winsmall.Var.Watch"
+      toolitem "Stack" ":varframe" "Winsmall.Var.Frame /l /c"
+      toolitem "Automatic Watch" ":varref" "Winsmall.Var.Ref"
+      separator
+      toolitem "List Breakpoints" "break" "Winsmall.Break.List"
+      toolitem "List Symbols" "symbols" "Winsmall.sYmbol.Browse"
+      separator
+      )
+    )
+    //winsmall.area.view DBG_AREA
+    //winsmall.area.view DBG_AREA
+    //winsmall.area.view DBG_AREA
+    //winsmall.area.select DBG_AREA    
+)
+ELSE
+(
+  IF ("&MY_FONTSIZE"=="normal")
+  (
+    menu.rp
+    (
+      add
+      toolbar
+      (
+      separator
+      toolitem "Source/List" "list" "Data.List"
+      toolitem "Memory Dump" "dump" "Data.dump"
+      toolitem "Register" "reg" "Register"
+      separator
+      toolitem "Watch" ":varwatch" "Var.Watch"
+      toolitem "Stack" ":varframe" "Var.Frame /l /c"
+      toolitem "Automatic Watch" ":varref" "Var.Ref"
+      separator
+      toolitem "List Breakpoints" "break" "Break.List"
+      toolitem "List Symbols" "symbols" "sYmbol.Browse"
+      separator
+      )
+    )
+    //area.view DBG_AREA
+    //area.view DBG_AREA
+    //area.view DBG_AREA
+    //area.select DBG_AREA
+  )
+  ELSE
+  (
+    menu.rp
+    (
+      add
+      toolbar
+      (
+      separator
+      toolitem "Source/List" "list" "WinLarge.Data.List"
+      toolitem "Memory Dump" "dump" "WinLarge.Data.dump"
+      toolitem "Register" "reg" "WinLarge.Register"
+      separator
+      toolitem "Watch" ":varwatch" "WinLarge.Var.Watch"
+      toolitem "Stack" ":varframe" "WinLarge.Var.Frame /l /c"
+      toolitem "Automatic Watch" ":varref" "WinLarge.Var.Ref"
+      separator
+      toolitem "List Breakpoints" "break" "WinLarge.Break.List"
+      toolitem "List Symbols" "symbols" "WinLarge.sYmbol.Browse"
+      separator
+      )
+    )
+    //WinLarge.area.view DBG_AREA
+    //WinLarge.area.view DBG_AREA
+    //WinLarge.area.view DBG_AREA
+    //WinLarge.area.select DBG_AREA    
+
+  )
+)
+DO &AZ_PATH\APPZONE\libexec\t32view.cmm init
+//WINPOS 0.0 48.143 84. 20. 10. 10. DBG_AREA
+//winsmall.area.view DBG_AREA
+//winsmall.area.view DBG_AREA
+//winsmall.area.view DBG_AREA
+//winsmall.area.select DBG_AREA    
+if "&MY_FONTSIZE"=="small"   ;small
+(
+  menu.REPROGRAM &AZ_PATH/XGOLD626/XGOLD626_smallfont.men
+) 
+else 
+(
+  if "&MY_FONTSIZE"=="normal"  
+  (
+    menu.REPROGRAM &AZ_PATH/XGOLD626/XGOLD626_std.men    
+  )
+  else
+  (
+   menu.REPROGRAM &AZ_PATH/XGOLD626/XGOLD626_largefont.men   
+  )
+  
+) 
+do &AZ_PATH/LOADXGOLD.cmm

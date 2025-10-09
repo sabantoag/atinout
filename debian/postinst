@@ -1,12 +1,12 @@
 #!/bin/bash
 
 set -e
-SERIAL_PORT=/dev/ttyUSB3
+
+FILE_PATH="/usr/lib/telit-firmware/m2mapz.bin"
+SERIAL_PORT="/dev/ttyUSB2"
 OLD_SETTINGS=$(stty -g -F ${SERIAL_PORT})
-# Configure the serial port for sending commands
+
 stty -F ${SERIAL_PORT} \
--igncr \
--icrnl \
 -ixon \
 -ixoff \
 -ignbrk \
@@ -24,46 +24,40 @@ stty -F ${SERIAL_PORT} \
 -echoke \
 time 5 \
 min 1
+
+try_at_command()
+{
+    local at_cmd="$1"
+    local max_retries=5
+    for ((i=1; i<=max_retries; i++)); do
+        echo $at_cmd
+        output=$(echo "$at_cmd" | atinout - "$SERIAL_PORT" - 2>&1)
+        status=$?
+        if [[ $status -eq 0 && "$output" == *"OK"* ]]; then
+            echo $output
+            return 0
+        fi
+    done
+}
+
+upload_firmware_file()
+{
+    local file_size_bytes=$(stat -c %s "$FILE_PATH")
+    echo 'AT#M2MWRITE="m2mapz.bin",'${file_size_bytes}',1' | atinout - "$SERIAL_PORT" - &
+    # Need to use a sleep here because atinout cannot handle the firmware upload command
+    sleep 1
+    cat ${FILE_PATH} > ${SERIAL_PORT}
+}
+
+# disable local echo
+try_at_command "ATE0"
+
+upload_firmware_file
+# Start firmware file immediately
+try_at_command 'AT#M2MRUN=1,"m2mapz.bin"'
+try_at_command 'AT#M2MRUN=5,"m2mapz.bin"'
+
 # Restore old settings
 stty -F ${SERIAL_PORT} "$OLD_SETTINGS"
-
-# Disable local echo
-echo 'ATE0' | atinout - ${SERIAL_PORT} -
-sleep 0.1
-# Hide the output of this command since it is only used here
-# to clear the buffer if local echo was enabled prior to ATE0 being sent
-echo 'AT' | atinout - ${SERIAL_PORT} - > /dev/null
-sleep 0.1
-echo 'AT#ENAEVMONI=0' | atinout - ${SERIAL_PORT} -
-sleep 0.1
-echo 'AT#ENAEVMONICFG=3,1,2' | atinout - ${SERIAL_PORT} -
-sleep 0.1
-echo 'AT#EVMONI="SMSIN",0,1,"TEST"' | atinout - ${SERIAL_PORT} -
-sleep 0.1
-echo 'AT#EVMONI="SMSIN",0,0,"AT#GPIO=3,1,1"' | atinout - ${SERIAL_PORT} -
-sleep 0.1
-echo 'AT#EVMONI="SMSIN",1' | atinout - ${SERIAL_PORT} -
-sleep 0.1
-echo 'AT#EVMONI="GPIO3",0,1,3' | atinout - ${SERIAL_PORT} -
-sleep 0.1
-echo 'AT#EVMONI="GPIO3",0,2,1' | atinout - ${SERIAL_PORT} -
-sleep 0.1
-echo 'AT#EVMONI="GPIO3",0,3,1' | atinout - ${SERIAL_PORT} -
-sleep 0.1
-echo 'AT#EVMONI="GPIO3",0,0,"AT#GPIO=3,1,0"' | atinout - ${SERIAL_PORT} -
-sleep 0.1
-echo 'AT#EVMONI="GPIO3",1' | atinout - ${SERIAL_PORT} -
-sleep 0.1
-echo 'AT#ENAEVMONI=1' | atinout - ${SERIAL_PORT} -
-sleep 0.1
-# Do not store text messages when received
-echo 'AT+CNMI=2,2,0,0,0' | atinout - ${SERIAL_PORT} -
-sleep 0.1
-echo 'AT&W0' | atinout - ${SERIAL_PORT} -
-sleep 0.1
-echo 'AT&W1' | atinout - ${SERIAL_PORT} -
-sleep 0.1
-# Clear out SMS storage in case spam texts were previously received
-echo 'AT+CMGD=1,4' | atinout - ${SERIAL_PORT} -
 
 exit 0

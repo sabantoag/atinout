@@ -1,0 +1,10 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
+
+Name: netcon
+Description: netcon services package
+Version: @VERSION@
+Libs: -L${libdir}  -lnetcon
+Cflags: -I${includedir}/netcon

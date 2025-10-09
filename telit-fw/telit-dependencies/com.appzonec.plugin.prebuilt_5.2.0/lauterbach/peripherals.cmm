@@ -1,0 +1,63 @@
+;/*******************************************************************
+;*
+;*       (C) TELIT - TELECOMMUNICATIONS 
+;*
+;*    FILE:          peripherals.cmm             CC_VERSION: v1.0
+;*
+;*    AUTHOR:        APA Telit semplified  - For launching peripheral window
+;*
+;*    DESCRIPTION:	 For starting related peripheral window
+;*
+;*    DEVICE:		     XGOLD213 - XGOLD626 - XGOLD716
+;*
+;*    NOTE: This file is used from men configuration, to open related peripheral windows 
+;*
+;*
+;*******************************************************************/
+
+// used peripheral and cmd to launch selected peripheral
+LOCAL &usedper &cmdper
+
+IF ("&PLAT"=="TELIT_2G_I")
+(
+  &usedper="XGOLD213"
+)
+ELSE
+(
+  IF ("&PLAT"=="TELIT_3G_I")
+  (
+    &usedper="XGOLD626"
+  )
+  ELSE
+  (  
+     IF ("&PLAT"=="TELIT_4G_I")
+     (
+       &usedper="XGOLD716"
+     )
+     ELSE
+     (
+       ENDDO
+     )
+  )
+  
+)
+
+
+&cmdper="&usedper\&usedper.per /DP /SPOTLIGHT" 
+  
+  
+IF ("&MY_FONTSIZE"=="small")
+(
+   winsmall.PER .\&cmdper
+)
+ELSE
+(
+  IF ("&MY_FONTSIZE"=="large")
+  (
+     winlarge.PER .\&cmdper
+  )
+  ELSE
+  (
+    PER .\&cmdper
+  )
+)

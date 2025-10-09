@@ -1,0 +1,12 @@
+prefix=/usr
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=/jenhome/jenkins/jobs/LE910Cx_Multi_DAILY/workspace/build/apps_proc/poky/build/tmp-glibc/sysroots/mdm9607/usr/include
+
+Name: libselinux
+Description: SELinux utility library
+Version: 2.4
+URL: http://userspace.selinuxproject.org/
+Requires.private: libsepol libpcre
+Libs: -L${libdir} -lselinux
+Cflags: -I${includedir}

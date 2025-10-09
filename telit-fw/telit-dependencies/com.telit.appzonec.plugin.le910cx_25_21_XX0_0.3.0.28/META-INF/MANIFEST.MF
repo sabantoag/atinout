@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: LE910Cx
+Bundle-SymbolicName: com.telit.appzonec.plugin.le910cx_25_21_XX0;singleton:=true
+Bundle-Version: 0.3.0.28
+Bundle-Activator: com.telit.appzonec.plugin.le910cx_25_21_XX0.Activator
+Bundle-Vendor: Telit
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime
+Bundle-RequiredExecutionEnvironment: JavaSE-11
+Bundle-ActivationPolicy: lazy
+Import-Package: com.unifiedplugin.registry,
+ com.unifiedplugin.utilities
+Export-Package: com.telit.appzonec.plugin.le910cx_25_21_XX0
+Automatic-Module-Name: com.telit.appzonec.plugin.le910cx.25.21.XX0

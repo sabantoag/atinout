@@ -1,0 +1,143 @@
+#!/usr/bin/env sh
+AR=ar
+AR_FOR_TARGET=arm-oe-linux-gnueabi-ar
+AS='as '
+BUILD_AR=ar
+BUILD_AS='as '
+BUILD_CC='gcc '
+BUILD_CCLD='gcc '
+BUILD_CFLAGS='-isystem/jenhome/jenkins/jobs/LE910Cx_Multi_DAILY/workspace/build/apps_proc/poky/build/tmp-glibc/sysroots/x86_64-linux/usr/include -O2 -pipe'
+BUILD_CPP='gcc  -E'
+BUILD_CPPFLAGS=-isystem/jenhome/jenkins/jobs/LE910Cx_Multi_DAILY/workspace/build/apps_proc/poky/build/tmp-glibc/sysroots/x86_64-linux/usr/include
+BUILD_CXX='g++ '
+BUILD_CXXFLAGS='-isystem/jenhome/jenkins/jobs/LE910Cx_Multi_DAILY/workspace/build/apps_proc/poky/build/tmp-glibc/sysroots/x86_64-linux/usr/include -O2 -pipe'
+BUILD_FC='gfortran '
+BUILD_LD='ld '
+BUILD_LDFLAGS='-L/jenhome/jenkins/jobs/LE910Cx_Multi_DAILY/workspace/build/apps_proc/poky/build/tmp-glibc/sysroots/x86_64-linux/usr/lib -L/jenhome/jenkins/jobs/LE910Cx_Multi_DAILY/workspace/build/apps_proc/poky/build/tmp-glibc/sysroots/x86_64-linux/lib -Wl,-rpath-link,/jenhome/jenkins/jobs/LE910Cx_Multi_DAILY/workspace/build/apps_proc/poky/build/tmp-glibc/sysroots/x86_64-linux/usr/lib -Wl,-rpath-link,/jenhome/jenkins/jobs/LE910Cx_Multi_DAILY/workspace/build/apps_proc/poky/build/tmp-glibc/sysroots/x86_64-linux/lib -Wl,-rpath,/jenhome/jenkins/jobs/LE910Cx_Multi_DAILY/workspace/build/apps_proc/poky/build/tmp-glibc/sysroots/x86_64-linux/usr/lib -Wl,-rpath,/jenhome/jenkins/jobs/LE910Cx_Multi_DAILY/workspace/build/apps_proc/poky/build/tmp-glibc/sysroots/x86_64-linux/lib -Wl,-O1'
+BUILD_NM=nm
+BUILD_RANLIB=ranlib
+BUILD_STRIP=strip
+CC='gcc '
+CCACHE_DIR=/home/TMT/svc_krs_jenkins
+CCACHE_DISABLE=1
+CCLD='gcc '
+CC_FOR_BUILD='gcc '
+CC_FOR_TARGET=' arm-oe-linux-gnueabi-gcc'
+CFLAGS='-isystem/jenhome/jenkins/jobs/LE910Cx_Multi_DAILY/workspace/build/apps_proc/poky/build/tmp-glibc/sysroots/x86_64-linux/usr/include -O2 -pipe'
+CFLAGS_FOR_BUILD='-isystem/jenhome/jenkins/jobs/LE910Cx_Multi_DAILY/workspace/build/apps_proc/poky/build/tmp-glibc/sysroots/x86_64-linux/usr/include -O2 -pipe'
+CFLAGS_FOR_TARGET=' -O2 -fexpensive-optimizations -frename-registers -fomit-frame-pointer -ftree-vectorize   -Wno-error=maybe-uninitialized -finline-functions -finline-limit=64  -fstack-protector-strong -pie -fpie -Wa,--noexecstack'
+CONFIG_SITE='/jenhome/jenkins/jobs/LE910Cx_Multi_DAILY/workspace/build/apps_proc/poky/meta/site/endian-little /jenhome/jenkins/jobs/LE910Cx_Multi_DAILY/workspace/build/apps_proc/poky/meta/site/common-linux /jenhome/jenkins/jobs/LE910Cx_Multi_DAILY/workspace/build/apps_proc/poky/meta/site/common-glibc /jenhome/jenkins/jobs/LE910Cx_Multi_DAILY/workspace/build/apps_proc/poky/meta/site/x86_64-linux /jenhome/jenkins/jobs/LE910Cx_Multi_DAILY/workspace/build/apps_proc/poky/meta/site/common /jenhome/jenkins/jobs/LE910Cx_Multi_DAILY/workspace/build/apps_proc/poky/build/tmp-glibc/work/x86_64-linux/gcc-cross-arm/4.9.3-r0/gcc-4.9.3/build.x86_64-linux.arm-oe-linux-gnueabi/aclocal-copy/glibc_config '
+CPP='gcc -E '
+CPPFLAGS=
+CPPFLAGS_FOR_BUILD=-isystem/jenhome/jenkins/jobs/LE910Cx_Multi_DAILY/workspace/build/apps_proc/poky/build/tmp-glibc/sysroots/x86_64-linux/usr/include
+CPPFLAGS_FOR_TARGET=
+CPP_FOR_BUILD='gcc  -E'
+CXX='g++ '
+CXXFLAGS='-isystem/jenhome/jenkins/jobs/LE910Cx_Multi_DAILY/workspace/build/apps_proc/poky/build/tmp-glibc/sysroots/x86_64-linux/usr/include -O2 -pipe'
+CXXFLAGS_FOR_BUILD='-isystem/jenhome/jenkins/jobs/LE910Cx_Multi_DAILY/workspace/build/apps_proc/poky/build/tmp-glibc/sysroots/x86_64-linux/usr/include -O2 -pipe'
+CXXFLAGS_FOR_TARGET=' -O2 -fexpensive-optimizations -frename-registers -fomit-frame-pointer -ftree-vectorize   -Wno-error=maybe-uninitialized -finline-functions -finline-limit=64  -fstack-protector-strong -pie -fpie -Wa,--noexecstack'
+CXX_FOR_BUILD='g++ '
+FC='gfortran '
+LD='ld '
+LDFLAGS='-L/jenhome/jenkins/jobs/LE910Cx_Multi_DAILY/workspace/build/apps_proc/poky/build/tmp-glibc/sysroots/x86_64-linux/usr/lib -L/jenhome/jenkins/jobs/LE910Cx_Multi_DAILY/workspace/build/apps_proc/poky/build/tmp-glibc/sysroots/x86_64-linux/lib -Wl,-rpath-link,/jenhome/jenkins/jobs/LE910Cx_Multi_DAILY/workspace/build/apps_proc/poky/build/tmp-glibc/sysroots/x86_64-linux/usr/lib -Wl,-rpath-link,/jenhome/jenkins/jobs/LE910Cx_Multi_DAILY/workspace/build/apps_proc/poky/build/tmp-glibc/sysroots/x86_64-linux/lib -Wl,-rpath,/jenhome/jenkins/jobs/LE910Cx_Multi_DAILY/workspace/build/apps_proc/poky/build/tmp-glibc/sysroots/x86_64-linux/usr/lib -Wl,-rpath,/jenhome/jenkins/jobs/LE910Cx_Multi_DAILY/workspace/build/apps_proc/poky/build/tmp-glibc/sysroots/x86_64-linux/lib -Wl,-O1'
+LDFLAGS_FOR_BUILD='-L/jenhome/jenkins/jobs/LE910Cx_Multi_DAILY/workspace/build/apps_proc/poky/build/tmp-glibc/sysroots/x86_64-linux/usr/lib -L/jenhome/jenkins/jobs/LE910Cx_Multi_DAILY/workspace/build/apps_proc/poky/build/tmp-glibc/sysroots/x86_64-linux/lib -Wl,-rpath-link,/jenhome/jenkins/jobs/LE910Cx_Multi_DAILY/workspace/build/apps_proc/poky/build/tmp-glibc/sysroots/x86_64-linux/usr/lib -Wl,-rpath-link,/jenhome/jenkins/jobs/LE910Cx_Multi_DAILY/workspace/build/apps_proc/poky/build/tmp-glibc/sysroots/x86_64-linux/lib -Wl,-rpath,/jenhome/jenkins/jobs/LE910Cx_Multi_DAILY/workspace/build/apps_proc/poky/build/tmp-glibc/sysroots/x86_64-linux/usr/lib -Wl,-rpath,/jenhome/jenkins/jobs/LE910Cx_Multi_DAILY/workspace/build/apps_proc/poky/build/tmp-glibc/sysroots/x86_64-linux/lib -Wl,-O1'
+LDFLAGS_FOR_TARGET='-Wl,-O1 -Wl,--hash-style=gnu -Wl,--as-needed -Wl,-z,relro,-z,now,-z,noexecstack'
+LD_FOR_BUILD='ld '
+LD_FOR_TARGET=arm-oe-linux-gnueabi-ld
+MAKE=make
+NM=nm
+NM_FOR_TARGET=arm-oe-linux-gnueabi-nm
+OBJCOPY=objcopy
+OBJDUMP=objdump
+OLDPWD=/jenhome/jenkins/jobs/LE910Cx_Multi_DAILY/workspace/build/apps_proc/poky/build
+PATH='/jenhome/jenkins/jobs/LE910Cx_Multi_DAILY/workspace/build/apps_proc/poky/build/tmp-glibc/sysroots/x86_64-linux/usr/bin/texinfo-dummy-native:/jenhome/jenkins/jobs/LE910Cx_Multi_DAILY/workspace/build/apps_proc/poky/scripts:/jenhome/jenkins/jobs/LE910Cx_Multi_DAILY/workspace/build/apps_proc/poky/build/tmp-glibc/sysroots/x86_64-linux/usr/bin/arm-oe-linux-gnueabi:/jenhome/jenkins/jobs/LE910Cx_Multi_DAILY/workspace/build/apps_proc/poky/build/tmp-glibc/sysroots/x86_64-linux/jenhome/jenkins/jobs/LE910Cx_Multi_DAILY/workspace/build/apps_proc/poky/build/tmp-glibc/sysroots/x86_64-linux/usr/bin/arm-oe-linux-gnueabi/crossscripts:/jenhome/jenkins/jobs/LE910Cx_Multi_DAILY/workspace/build/apps_proc/poky/build/tmp-glibc/sysroots/x86_64-linux/usr/sbin:/jenhome/jenkins/jobs/LE910Cx_Multi_DAILY/workspace/build/apps_proc/poky/build/tmp-glibc/sysroots/x86_64-linux/usr/bin:/jenhome/jenkins/jobs/LE910Cx_Multi_DAILY/workspace/build/apps_proc/poky/build/tmp-glibc/sysroots/x86_64-linux/sbin:/jenhome/jenkins/jobs/LE910Cx_Multi_DAILY/workspace/build/apps_proc/poky/build/tmp-glibc/sysroots/x86_64-linux/bin:/jenhome/jenkins/jobs/LE910Cx_Multi_DAILY/workspace/build/apps_proc/poky/scripts:/jenhome/jenkins/jobs/LE910Cx_Multi_DAILY/workspace/build/apps_proc/poky/bitbake/bin:/opt/.pyenv/versions/2.7.5/bin:/home/TMT/svc_krs_jenkins/bin:~/bin:/opt/rational/clearcase/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games'
+PWD=/jenhome/jenkins/jobs/LE910Cx_Multi_DAILY/workspace/build/apps_proc/poky/build/tmp-glibc/work/x86_64-linux/gcc-cross-arm/4.9.3-r0/gcc-4.9.3/build.x86_64-linux.arm-oe-linux-gnueabi
+RANLIB=ranlib
+RANLIB_FOR_TARGET=arm-oe-linux-gnueabi-ranlib
+STRINGS=strings
+STRIP=strip
+TARGET_CFLAGS=' -O2 -fexpensive-optimizations -frename-registers -fomit-frame-pointer -ftree-vectorize   -Wno-error=maybe-uninitialized -finline-functions -finline-limit=64  -fstack-protector-strong -pie -fpie -Wa,--noexecstack'
+TARGET_CPPFLAGS=
+TARGET_CXXFLAGS=' -O2 -fexpensive-optimizations -frename-registers -fomit-frame-pointer -ftree-vectorize   -Wno-error=maybe-uninitialized -finline-functions -finline-limit=64  -fstack-protector-strong -pie -fpie -Wa,--noexecstack'
+TARGET_LDFLAGS='-Wl,-O1 -Wl,--hash-style=gnu -Wl,--as-needed -Wl,-z,relro,-z,now,-z,noexecstack'
+WORKSPACE=/jenhome/jenkins/jobs/LE910Cx_Multi_DAILY/workspace/build/apps_proc
+_='#!/usr/bin/env sh'
+base_bindir=/jenhome/jenkins/jobs/LE910Cx_Multi_DAILY/workspace/build/apps_proc/poky/build/tmp-glibc/sysroots/x86_64-linux/usr/bin/arm-oe-linux-gnueabi
+base_libdir=/jenhome/jenkins/jobs/LE910Cx_Multi_DAILY/workspace/build/apps_proc/poky/build/tmp-glibc/sysroots/x86_64-linux/lib
+base_prefix=/jenhome/jenkins/jobs/LE910Cx_Multi_DAILY/workspace/build/apps_proc/poky/build/tmp-glibc/sysroots/x86_64-linux
+base_sbindir=/jenhome/jenkins/jobs/LE910Cx_Multi_DAILY/workspace/build/apps_proc/poky/build/tmp-glibc/sysroots/x86_64-linux/usr/bin/arm-oe-linux-gnueabi
+bindir=/jenhome/jenkins/jobs/LE910Cx_Multi_DAILY/workspace/build/apps_proc/poky/build/tmp-glibc/sysroots/x86_64-linux/usr/bin/arm-oe-linux-gnueabi
+datadir=/jenhome/jenkins/jobs/LE910Cx_Multi_DAILY/workspace/build/apps_proc/poky/build/tmp-glibc/sysroots/x86_64-linux/usr/share
+docdir=/jenhome/jenkins/jobs/LE910Cx_Multi_DAILY/workspace/build/apps_proc/poky/build/tmp-glibc/sysroots/x86_64-linux/usr/share/doc
+exec_prefix=/jenhome/jenkins/jobs/LE910Cx_Multi_DAILY/workspace/build/apps_proc/poky/build/tmp-glibc/sysroots/x86_64-linux/usr
+gcc_cv_collect2_libs='none required'
+includedir=/jenhome/jenkins/jobs/LE910Cx_Multi_DAILY/workspace/build/apps_proc/poky/build/tmp-glibc/sysroots/x86_64-linux/usr/include
+infodir=/jenhome/jenkins/jobs/LE910Cx_Multi_DAILY/workspace/build/apps_proc/poky/build/tmp-glibc/sysroots/x86_64-linux/usr/share/info
+libdir=/jenhome/jenkins/jobs/LE910Cx_Multi_DAILY/workspace/build/apps_proc/poky/build/tmp-glibc/sysroots/x86_64-linux/usr/lib/arm-oe-linux-gnueabi
+libexecdir=/jenhome/jenkins/jobs/LE910Cx_Multi_DAILY/workspace/build/apps_proc/poky/build/tmp-glibc/sysroots/x86_64-linux/usr/libexec/arm-oe-linux-gnueabi
+localstatedir=/jenhome/jenkins/jobs/LE910Cx_Multi_DAILY/workspace/build/apps_proc/poky/build/tmp-glibc/sysroots/x86_64-linux/var
+lt_cv_sys_lib_dlsearch_path_spec='/jenhome/jenkins/jobs/LE910Cx_Multi_DAILY/workspace/build/apps_proc/poky/build/tmp-glibc/sysroots/x86_64-linux/usr/lib/arm-oe-linux-gnueabi /jenhome/jenkins/jobs/LE910Cx_Multi_DAILY/workspace/build/apps_proc/poky/build/tmp-glibc/sysroots/x86_64-linux/lib'
+mandir=/jenhome/jenkins/jobs/LE910Cx_Multi_DAILY/workspace/build/apps_proc/poky/build/tmp-glibc/sysroots/x86_64-linux/usr/share/man
+nonarch_base_libdir=/jenhome/jenkins/jobs/LE910Cx_Multi_DAILY/workspace/build/apps_proc/poky/build/tmp-glibc/sysroots/x86_64-linux/lib
+nonarch_libdir=/jenhome/jenkins/jobs/LE910Cx_Multi_DAILY/workspace/build/apps_proc/poky/build/tmp-glibc/sysroots/x86_64-linux/usr/lib
+oldincludedir=/jenhome/jenkins/jobs/LE910Cx_Multi_DAILY/workspace/build/apps_proc/poky/build/tmp-glibc/sysroots/x86_64-linux/usr/include
+prefix=/jenhome/jenkins/jobs/LE910Cx_Multi_DAILY/workspace/build/apps_proc/poky/build/tmp-glibc/sysroots/x86_64-linux/usr
+sbindir=/jenhome/jenkins/jobs/LE910Cx_Multi_DAILY/workspace/build/apps_proc/poky/build/tmp-glibc/sysroots/x86_64-linux/usr/bin/arm-oe-linux-gnueabi
+servicedir=/jenhome/jenkins/jobs/LE910Cx_Multi_DAILY/workspace/build/apps_proc/poky/build/tmp-glibc/sysroots/x86_64-linux/srv
+sharedstatedir=/jenhome/jenkins/jobs/LE910Cx_Multi_DAILY/workspace/build/apps_proc/poky/build/tmp-glibc/sysroots/x86_64-linux/com
+sysconfdir=/jenhome/jenkins/jobs/LE910Cx_Multi_DAILY/workspace/build/apps_proc/poky/build/tmp-glibc/sysroots/x86_64-linux/etc
+systemd_system_unitdir=/jenhome/jenkins/jobs/LE910Cx_Multi_DAILY/workspace/build/apps_proc/poky/build/tmp-glibc/sysroots/x86_64-linux/lib/systemd/system
+systemd_unitdir=/jenhome/jenkins/jobs/LE910Cx_Multi_DAILY/workspace/build/apps_proc/poky/build/tmp-glibc/sysroots/x86_64-linux/lib/systemd
+systemd_user_unitdir=/jenhome/jenkins/jobs/LE910Cx_Multi_DAILY/workspace/build/apps_proc/poky/build/tmp-glibc/sysroots/x86_64-linux/usr/lib/systemd/user
+userfsdatadir=/jenhome/jenkins/jobs/LE910Cx_Multi_DAILY/workspace/build/apps_proc/poky/build/tmp-glibc/sysroots/x86_64-linux/data
+target="$1"
+usage () {
+	echo "Usage:"
+	echo "$0 user@target 'extra options to dejagnu'"
+	echo "$0 target 'extra options to dejagnu'"
+	echo "$0 target"
+	echo "e.g. $0 192.168.7.2 ' dg.exp=visibility-d.c'"
+	echo "will only run visibility-d.c test case"
+	echo "e.g. $0 192.168.7.2 '/-mthumb dg.exp=visibility-d.c'"
+	echo "will only run visibility-d.c test case in thumb mode"
+	echo "You need to have dejagnu autogen expect installed"
+	echo "on the build host"
+    }
+if [ "x$target" = "x" ]
+then
+	echo "Please specify the target machine and remote user in form of user@target\n"
+	usage
+	exit 1;
+fi
+
+shift
+
+echo "$target" | grep "@" 2>&1 > /dev/null
+if [ "x$?" = "x0" ]
+then
+   user=$(echo $target | cut -d '@' -f 1)
+   target=$(echo $target | cut -d '@' -f 2)
+else
+   user=$USER
+fi
+ssh $user@$target date 2>&1 > /dev/null
+if [ "x$?" != "x0" ]
+then
+	echo "Failed connecting to $user@$target it could be because"
+	echo "you don't have passwordless ssh setup to access $target"
+	echo "or sometimes host key has been changed"
+	echo "in such case do something like below on build host"
+	echo "ssh-keygen -f "~/.ssh/known_hosts" -R $target"
+	echo "and then try ssh $user@$target"
+
+	usage
+	exit 1
+fi
+	echo "lappend boards_dir [pwd]/../../.." > /jenhome/jenkins/jobs/LE910Cx_Multi_DAILY/workspace/build/apps_proc/poky/build/tmp-glibc/work/x86_64-linux/gcc-cross-arm/4.9.3-r0/gcc-4.9.3/build.x86_64-linux.arm-oe-linux-gnueabi/site.exp
+	echo "load_generic_config \"unix\"" > /jenhome/jenkins/jobs/LE910Cx_Multi_DAILY/workspace/build/apps_proc/poky/build/tmp-glibc/work/x86_64-linux/gcc-cross-arm/4.9.3-r0/gcc-4.9.3/build.x86_64-linux.arm-oe-linux-gnueabi/x86_64.exp
+	echo "set_board_info username $user" >> /jenhome/jenkins/jobs/LE910Cx_Multi_DAILY/workspace/build/apps_proc/poky/build/tmp-glibc/work/x86_64-linux/gcc-cross-arm/4.9.3-r0/gcc-4.9.3/build.x86_64-linux.arm-oe-linux-gnueabi/x86_64.exp
+	echo "set_board_info rsh_prog ssh" >> /jenhome/jenkins/jobs/LE910Cx_Multi_DAILY/workspace/build/apps_proc/poky/build/tmp-glibc/work/x86_64-linux/gcc-cross-arm/4.9.3-r0/gcc-4.9.3/build.x86_64-linux.arm-oe-linux-gnueabi/x86_64.exp
+	echo "set_board_info rcp_prog scp" >> /jenhome/jenkins/jobs/LE910Cx_Multi_DAILY/workspace/build/apps_proc/poky/build/tmp-glibc/work/x86_64-linux/gcc-cross-arm/4.9.3-r0/gcc-4.9.3/build.x86_64-linux.arm-oe-linux-gnueabi/x86_64.exp
+	echo "set_board_info hostname $target" >> /jenhome/jenkins/jobs/LE910Cx_Multi_DAILY/workspace/build/apps_proc/poky/build/tmp-glibc/work/x86_64-linux/gcc-cross-arm/4.9.3-r0/gcc-4.9.3/build.x86_64-linux.arm-oe-linux-gnueabi/x86_64.exp
+	DEJAGNU=/jenhome/jenkins/jobs/LE910Cx_Multi_DAILY/workspace/build/apps_proc/poky/build/tmp-glibc/work/x86_64-linux/gcc-cross-arm/4.9.3-r0/gcc-4.9.3/build.x86_64-linux.arm-oe-linux-gnueabi/site.exp make -k check RUNTESTFLAGS="--target_board=x86_64$@"
+
