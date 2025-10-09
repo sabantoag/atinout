@@ -13,15 +13,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install make
-        run: sudo apt-get install -y make
-
       - name: Build release assets
-        run: make -j all && make strip
+        working-directory: ./scripts
+        run: ./docker-build.sh
 
       - name: Set release assets' paths
         run: |
-          asset="./build/m2mapz.bin"
+          asset="./build_aarch64/pfm-drivers_${GITHUB_REF_NAME#v}_arm64.deb"
           echo "asset=$asset" >> $GITHUB_ENV
 
       - name: Create release
