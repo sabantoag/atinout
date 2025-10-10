@@ -1,0 +1,29 @@
+name: Create Release Workflow
+run-name: Create release ${{ github.ref_name }}
+
+on:
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+'
+
+jobs:
+  create-release:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build release assets
+        working-directory: ./scripts
+        run: ./docker-build.sh
+
+      - name: Set release assets' paths
+        run: |
+          asset="./build/sabanto-modem-config_${GITHUB_REF_NAME#v}_arm64.deb"
+          echo "asset=$asset" >> $GITHUB_ENV
+
+      - name: Create release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ env.asset }}
+          generate_release_notes: true

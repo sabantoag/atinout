@@ -1,0 +1,17 @@
+; Environment variables
+OS=
+ID=T32
+TMP=E:\T32_cd\T32\temp
+SYS=E:\T32_cd\T32
+
+PBI=
+USB
+
+; Printer settings 
+PRINTER=WINDOWS
+
+; Screen fonts
+SCREEN=
+HEADER= T32   ----------   APPZONE
+
+;MDI

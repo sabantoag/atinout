@@ -1,0 +1,4 @@
+#!/bin/sh
+echo 'ERROR: /jenhome/jenkins/jobs/LE910Cx_Multi_DAILY/workspace/build/apps_proc/poky/build/tmp-glibc/sysroots/x86_64-linux/usr/bin/pcre-config should not be used, use an alternative such as pkg-config' >&2
+echo '--should-not-have-used-/jenhome/jenkins/jobs/LE910Cx_Multi_DAILY/workspace/build/apps_proc/poky/build/tmp-glibc/sysroots/x86_64-linux/usr/bin/pcre-config'
+exit 1

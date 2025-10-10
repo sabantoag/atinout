@@ -1,0 +1,33 @@
+;/*******************************************************************
+;*
+;*         (C) INFINEON TECHNOLOGIES - SECURE MOBILE SOLUTIONS
+;*
+;*        FILE:                Threadx_ARM.CMM
+;*        VERSION:              v1.2
+;*
+;*        AUTHOR:		SMS O MSCD VI CV -	PE
+;*
+;*        DESCRIPTION:	Default	startup	program	for	TRACE32
+;*
+;*					file will be called from T32_SGOLDV1.cmm by clicking OS button
+;*					for loading operation system menu.
+;*					Here the real debugging of OS task will be enabled and the OS menu
+;*					for nucleus loaded
+;*
+;*	  DEVICE:		S-GOLD, S-GOLD2
+;*        RTOS:         NUCLEUS
+;*	  HISTORY:
+;*
+;*	  main/1 03.12.04 SMS O MSCD VI CV -	PE	: file created and added first time	to source control
+;*
+;*******************************************************************/
+
+task ~~~~\threadx
+ TASK.CONFIG ~~~~\threadx         ; load ThreadX Awareness (threadx.t32)
+ MENU.ReProgram ~~~~\threadx_ARM      ; load ThreadX Menu (threadx_ARM.men)
+
+; Update for Stack Usage, ref SMS00890904.
+task.access ZSD:
+task.stack.pattern 0xAA
+
+enddo

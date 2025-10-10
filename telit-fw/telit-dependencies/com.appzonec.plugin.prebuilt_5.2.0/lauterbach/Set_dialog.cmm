@@ -1,0 +1,272 @@
+//just to see what has been retrived by files: needed because no more than 1 parameters
+//can be returned by functions call
+GLOBAL &readPROD &readFS
+
+//variable definitions
+LOCAL &CURDIR &path &Res &prevFont
+
+&CURDIR=OS.PPD()
+
+
+/////////////////////////////// initializations /////////////////////////
+
+//DBG_AREA already defined at startup T32_AZ_start.cmm
+WINSMALL.AREA.create DBG_AREA
+WINSMALL.AREA.SELECT DBG_AREA 
+
+//read file
+Do &CURDIR\InitFromFile.cmm 0
+
+IF ("&t32tmpdir"=="")
+(
+  &t32tmpdir="&SYS_PATH\temp\AZtmp"
+  IF (!OS.DIR(&t32tmpdir))
+  (
+    //MKDIR &t32tmpdir
+    OS.Command mkdir &t32tmpdir
+  )
+)
+
+IF ("&PRODUCT"=="")
+(
+  //the product was not found
+  PRINT %ERROR "Product " "&readPROD" " not found"
+  DIALOG.MESSAGE "Product <<&readPROD>> not found!!" " " \
+                 "Please check file" "&CURDIR\AppZone.ini" " OR set it using GUI"
+)
+IF ("&ECLIPSE_PROJECT_PATH"=="")
+(
+  //the product was not found
+  PRINT %ERROR "ECLIPSE_PROJECT_PATH" " not set"
+  DIALOG.MESSAGE "Please set the project path!!" " "\
+                 "Please check file " "&CURDIR\AppZone.ini" " OR set it using GUI"
+)
+
+
+IF ("&MY_FONTSIZE"=="")
+(
+  //the product was not found
+  PRINT %ERROR "FontSize " "&readFS" " not found"
+  DIALOG.MESSAGE "FontSize <<&readFS>> not found!!" " " \
+                 "Please check file " "&CURDIR\AppZone.ini" " OR set it using GUI" ""\
+                 " Filesize will be set as default by saving settings"
+  &MY_FONTSIZE="small"  //default 
+)
+&prevFont="&MY_FONTSIZE"
+
+IF (!OS.DIR("&ECLIPSE_PROJECT_PATH"))
+   DIALOG.MESSAGE "Eclipse Project Path << &ECLIPSE_PROJECT_PATH >> not found !!"
+
+Do &CURDIR\InitFromFile.cmm 2     ; <--- get &TELIT_PROD
+
+
+start:
+&path=""
+
+DIALOG
+(&
+HEADER "Configure AppZone Environment"
+POS 0. 0. 70. 1.
+BOX " Select Product "
+POS 0. 1. 20.
+
+OptionA.SEL:		DEFCOMBOBOX "&AV_PRODS" ""
+
+POS 40. 1. 15.
+TEXT "Telit axf ref: "
+POS 50. 1. 20.
+Telitprod: EDIT "&TELIT_PROD" ""
+
+POS 0. 3. 70. 1.
+BOX " Set Eclipse Project Path "
+
+POS 0. 4. 65.
+eclipse.path: EDIT "&ECLIPSE_PROJECT_PATH" ""
+POS 66. 4. 8.
+
+BUTTON "[:edit]Browse..."
+(
+  ON ERROR JUMPTO dir_error
+  DIALOG.DIR &ECLIPSE_PROJECT_PATH\.* 
+  ENTRY &path
+  JUMPTO exit1
+)
+
+      ;  POS 66. 5. 8.
+      ;  
+      ;  BUTTON "[:edit]Browse..."
+      ;  (
+      ;   /////DIALOG.SETDIR &ECLIPSE_PROJECT_PATH
+      ;   ///DIALOG.FILE &ECLIPSE_PROJECT_PATH\*.*
+      ;   ///ENTRY &hidden
+      ;   ///JUMPTO eval_file
+      ;   ///EDIT &hidden
+      ;   /DIR &ECLIPSE_PROJECT_PATH /PATH
+      ;  )
+
+POS 0. 6. 70. 1.
+BOX " Select Font Size "
+POS 0. 7. 10
+Font.SEL:		DEFCOMBOBOX "&FS_AVAIL" ""
+
+POS 1. 9. 12.
+DEFBUTTON "Save Settings" "JUMPTO okclose"
+
+POS 32. 9. 20.
+DEFBUTTON "Update Dialog" "JUMPTO exit1"
+
+
+POS 62. 9. 12.
+BUTTON "Edit Files"
+(
+  DIR &ECLIPSE_PROJECT_PATH /PATH
+)
+CLOSE "JUMPTO winclose"
+
+)
+
+LOCAL &loc_telit &loc_prod
+
+DIALOG.SET OptionA.SEL "&PRODUCT"
+DIALOG.SET Font.SEL "&MY_FONTSIZE"
+
+&loc_prod=DIALOG.STRING(OptionA.SEL)
+Do &CURDIR\InitFromFile.cmm 2 &loc_prod      ; <--- get &converted telit prod only for print
+ENTRY &loc_telit
+DIALOG.SET Telitprod "&loc_telit"
+DIALOG.DISABLE Telitprod
+
+
+STOP
+
+// Exit with OK status
+okclose:
+&PRODUCT=DIALOG.STRING(OptionA.SEL);
+&MY_FONTSIZE=DIALOG.STRING(Font.SEL);
+&ECLIPSE_PROJECT_PATH=DIALOG.STRING(eclipse.path)
+Do &CURDIR\InitFromFile.cmm 2     ; <--- get &TELIT_PROD
+
+//directory set using the string: invalid path written
+IF (!OS.DIR("&ECLIPSE_PROJECT_PATH"))
+(
+  DIALOG.MESSAGE "Eclipse Project Path << &ECLIPSE_PROJECT_PATH >> not found !!"
+  JUMPTO dir_not_found
+)
+
+
+IF "&ECLIPSE_PROJECT_PATH"==""
+(
+  DIALOG.MESSAGE "Please set Eclipse Project Path"
+  DIALOG.END
+  GOTO start
+)
+
+IF (OS.FILE(&ECLIPSE_PROJECT_PATH\prod_tool.cmm)==FALSE())
+(
+   DIALOG.MESSAGE "File &ECLIPSE_PROJECT_PATH\prod_tool.cmm not found" \
+                  " Set the right Project Path"
+   JUMPTO dir_not_found
+)
+
+//menu.reset
+  
+  DO &ECLIPSE_PROJECT_PATH\prod_tool.cmm
+  DO &AZ_PATH/APPZONE/ProdPlatMatch.cmm
+  ENTRY &Res
+  //mismatch
+  IF (&Res==0)
+    GOTO avoid_reconfig 
+
+//Now the file can be updated
+//beacuse it is in the same directory
+DEL &CURDIR\AppZone.ini
+Do &CURDIR\InitFromFile.cmm 1
+ 
+IF ("&prevFont"!="&MY_FONTSIZE") 
+(
+  IF "&PLAT"=="TELIT_2G_I"
+    PRINT %ERROR "2G Debug Session Started at " CLOCK.TIME()
+  ELSE
+  (
+    IF (&LTEflag==1)
+      PRINT %ERROR "LTE Debug Session Started at " CLOCK.TIME()
+    ELSE
+      PRINT %ERROR "3G Debug Session Started at " CLOCK.TIME()
+  )
+  PRINT "---------------------------------------------------"
+  PRINT "PROD      : << &PRODUCT >>"   
+  PRINT "PROJ PATH : << &ECLIPSE_PROJECT_PATH >>"
+IF (&LTEflag==1)
+  PRINT "PLATFORM  : << TELIT_LTE >>"
+ELSE  
+  PRINT "PLATFORM  : << &PLAT >>" 
+  PRINT "TOOLCHAIN : << &TOOLCHAIN >>"
+  PRINT "---------------------------------------------------"
+  PRINT "CPU FAMILY IS ARM !!"
+  
+  DO &CURDIR\AppZoneMenu.cmm  
+)  
+    
+
+DIALOG.END
+//PRINT "Selected PRODUCT= " "&PROD"
+
+ENDDO
+
+
+/////////////////////////////////////////////////////////////
+exit1:
+//PRINT "Closed by Setting "
+LOCAL &temp 
+&PRODUCT=DIALOG.STRING(OptionA.SEL);
+&MY_FONTSIZE=DIALOG.STRING(Font.SEL);
+IF "&path"!=""
+(
+  &ECLIPSE_PROJECT_PATH="&path" 
+)
+ELSE
+(
+  &temp=DIALOG.STRING(eclipse.path)
+  IF ("&temp"!="")
+  (
+    IF (OS.DIR(&temp))
+      &ECLIPSE_PROJECT_PATH="&temp" 
+    ELSE
+      DIALOG.MESSAGE "Eclipse Project Path" "<< &temp >>" " not found! "    
+  )
+)
+
+avoid_reconfig:
+DIALOG.END
+GOTO start
+
+dir_error:
+  DIALOG.MESSAGE "Eclipse Project Path" "&temp" " wrongly set! "\
+                 " '\' or '/' must not be present as last char"    
+  //JUMPTO return_dir_err
+  ON ERROR NOTHING
+  JUMPTO exit1
+
+
+winclose:
+//PRINT "Closed by X"
+DIALOG.END
+ENDDO
+
+    
+error_path:
+  DIALOG.MESSAGE "Eclipse Project Path << &ECLIPSE_PROJECT_PATH >> not found !!"
+  //&ECLIPSE_PROJECT_PATH = &ECLIPSE_PROJECT_PATH\..
+  ENDDO
+  
+dir_not_found:
+
+  DIALOG.END
+  GOTO start
+  
+  
+//eval_file:
+//  IF "&hidden"!=""
+//    EDIT &hidden
+//DIALOG.END
+//GOTO start

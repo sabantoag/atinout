@@ -1,0 +1,125 @@
+;/*******************************************************************
+;*
+;*       (C) TELIT - TELECOMMUNICATIONS 
+;*
+;*    FILE:          AZ_products.cmm             CC_VERSION: v1.0
+;*
+;*    AUTHOR:        APA Telit semplified  - For starting AZ
+;*
+;*    DESCRIPTION:	 For starting selecting product (and relative axf file)
+;*
+;*    DEVICE:		 XGOLD626 - XGOLD118
+;*
+;*    NOTE: This file should be update accordingly to new available products.
+;*
+;*
+;*******************************************************************/
+
+
+/////////////////////////////
+// NB: preserve position of comma, spaces and so on! Important!
+//&AV_PRODS="LE910_SV_V2,LE910_SV1,LE910_SVL,LE910_AU_V2,LE910_JN_V2,LE910_JK_V2,LE910_EU_V2,LE910_EU1,LE910_NA_V2,LE910_NA1,HE910_G-AZ,UE910_EUD-AZ,UE910_EUD-AZ_64R_64F,GE910-GNSS-AZ,GE910-AZ,"
+
+//  P:   means FW version of Product
+//  LTE: if LTE set to 1
+//  TP:  TestingProduct means "axf file name"  with debugging symbols of the product
+
+// Please remember to update MAX_N_PROD in case of adding or removing products
+// It is a matrix, so indexes are important: set MAX_N_PROD = max row index + 1
+// e.g row from 0 to N  => MAX_N_PROD = N+1
+
+GLOBAL &MAX_N_PROD
+  &MAX_N_PROD=54. 
+  
+  Var.NEWGLOBAL char[&MAX_N_PROD][128] \prod_matrx
+  LOCAL &rowstring &ind &ADD_PROD
+  &ind=0.
+  
+  //  12.xx.00x  => x means not considered during evaluation
+  //------------------ 2G --------------------------------------------------------------------------
+  Var.Assign  \prod_matrx[0]="P=13.xx.00x LTE=0 TP=GE910-AZ "
+  Var.Assign  \prod_matrx[1]="P=13.xx.10x LTE=0 TP=GE910-GNSS-AZ "
+  
+  //------------------ 3G --------------------------------------------------------------------------
+  Var.Assign   \prod_matrx[2]="P=12.xx.00x LTE=0 TP=HE910_G "           //HE910_DG, HE910_G_NWH3G, HE910_G_TH
+  Var.Assign   \prod_matrx[3]="P=12.xx.02x LTE=0 TP=HE910_D "
+  Var.Assign   \prod_matrx[4]="P=12.xx.03x LTE=0 TP=HE910_G_EDMI"
+  Var.Assign   \prod_matrx[5]="P=12.xx.05x LTE=0 TP=HE910_D_SKT "
+  Var.Assign   \prod_matrx[6]="P=12.xx.06x LTE=0 TP=HE910_D_ECM "
+  Var.Assign   \prod_matrx[7]="P=12.xx.07x LTE=0 TP=HE910_D_KT "
+  
+  Var.Assign   \prod_matrx[8]="P=12.xx.10x LTE=0 TP=HE910_GL "  
+  Var.Assign   \prod_matrx[9]="P=12.xx.11x LTE=0 TP=HE910_GL_4M "
+  Var.Assign  \prod_matrx[10]="P=12.xx.20x LTE=0 TP=HE910_EUR "
+  Var.Assign  \prod_matrx[11]="P=12.xx.21x LTE=0 TP=HE910_EUG "
+  Var.Assign  \prod_matrx[12]="P=12.xx.22x LTE=0 TP=HE910_EUD "
+  Var.Assign  \prod_matrx[13]="P=12.xx.23x LTE=0 TP=HE910_EUD_EDMI "
+  Var.Assign  \prod_matrx[14]="P=12.xx.24x LTE=0 TP=HE910_EUD_ECM "      // HE910_EUG_KT
+  Var.Assign  \prod_matrx[15]="P=12.xx.25x LTE=0 TP=HE910_EUR_TYCO "
+  
+  Var.Assign  \prod_matrx[16]="P=12.xx.30x LTE=0 TP=HE910_NAR"
+  Var.Assign  \prod_matrx[17]="P=12.xx.31x LTE=0 TP=HE910_NAG"
+  Var.Assign  \prod_matrx[18]="P=12.xx.32x LTE=0 TP=HE910_NAD"
+  
+  Var.Assign  \prod_matrx[19]="P=12.xx.40x LTE=0 TP=UE910_EUR "
+  Var.Assign  \prod_matrx[20]="P=12.xx.41x LTE=0 TP=UE910_EUD_64R_64F "  //UE910_EUD, UE910_EUD_64R_64F_6255
+  Var.Assign  \prod_matrx[21]="P=12.xx.42x LTE=0 TP=UE910_N3G_6255 "
+  Var.Assign  \prod_matrx[22]="P=12.xx.43x LTE=0 TP=UE910_EUR_6255 "
+  Var.Assign  \prod_matrx[23]="P=12.xx.44x LTE=0 TP=UE910_EUR_TYCO "
+  
+  Var.Assign  \prod_matrx[24]="P=12.xx.50x LTE=0 TP=UE910_NAR "
+  Var.Assign  \prod_matrx[25]="P=12.xx.51x LTE=0 TP=UE910_NAD "
+  Var.Assign  \prod_matrx[26]="P=12.xx.52x LTE=0 TP=UE910_E3GG_6255 "
+  Var.Assign  \prod_matrx[27]="P=12.xx.53x LTE=0 TP=UE910_NAR_TYCO "
+  Var.Assign  \prod_matrx[28]="P=12.xx.54x LTE=0 TP=UE910_NAR_ECM "
+  Var.Assign  \prod_matrx[29]="P=12.xx.55x LTE=0 TP=UE910_NAD_ECM "
+  
+  Var.Assign  \prod_matrx[30]="P=12.xx.60x LTE=0 TP=UL865_EUR "
+  Var.Assign  \prod_matrx[31]="P=12.xx.61x LTE=0 TP=UL865_EUD "
+  Var.Assign  \prod_matrx[32]="P=12.xx.64x LTE=0 TP=UL865_EUR_6255 "
+  Var.Assign  \prod_matrx[33]="P=12.xx.65x LTE=0 TP=UL865_BR "
+  Var.Assign  \prod_matrx[34]="P=12.xx.66x LTE=0 TP=UL865_BR_6255 "
+  
+  Var.Assign  \prod_matrx[35]="P=12.xx.70x LTE=0 TP=UL865_NAR "
+  Var.Assign  \prod_matrx[36]="P=12.xx.71x LTE=0 TP=UL865_NAD "
+  Var.Assign  \prod_matrx[37]="P=12.xx.72x LTE=0 TP=UL865_N3G "
+  Var.Assign  \prod_matrx[38]="P=12.xx.73x LTE=0 TP=UL865_N3G_6255 "
+  
+  Var.Assign  \prod_matrx[39]="P=12.xx.80x LTE=0 TP=UE866_N3G_6255 "
+  Var.Assign  \prod_matrx[40]="P=12.xx.82x LTE=0 TP=UE866_EUR_6255 "
+  Var.Assign  \prod_matrx[41]="P=12.xx.83x LTE=0 TP=UE866_EUR_6255_PAS "
+  
+  
+  Var.Assign  \prod_matrx[42]="P=12.xx.92x LTE=0 TP=UE910_EUD-TOSHIBA_64R_64F "
+  Var.Assign  \prod_matrx[43]="P=12.xx.93x LTE=0 TP=UE910_EUD-AZ_64R_64F "     //UE910_EUD-TOSHIBA_64R_64F_6255
+  
+  //------------------ 4G --------------------------------------------------------------------------
+  Var.Assign \prod_matrx[44]="P=20.xx.00x LTE=1 TP=LE910_SV_V2_1G "
+  Var.Assign \prod_matrx[45]="P=20.xx.01x LTE=1 TP=LE910_SV1_1G "
+  Var.Assign \prod_matrx[46]="P=20.xx.02x LTE=1 TP=LE910_SVL_1G "
+  Var.Assign \prod_matrx[47]="P=20.xx.10x LTE=1 TP=LE910_AU_V2_1G " 
+  Var.Assign \prod_matrx[48]="P=20.xx.20x LTE=1 TP=LE910_JN_V2_1G "
+  Var.Assign \prod_matrx[49]="P=20.xx.30x LTE=1 TP=LE910_JK_V2_1G "
+  Var.Assign \prod_matrx[50]="P=20.xx.40x LTE=1 TP=LE910_EU_V2_1G "  //LE910_EU_V2_1G -- LE910_EU1_1G_NO_AZ
+  Var.Assign \prod_matrx[51]="P=20.xx.41x LTE=1 TP=LE910_EU1_1G "
+  Var.Assign \prod_matrx[52]="P=20.xx.50x LTE=1 TP=LE910_NA_V2_1G "
+  Var.Assign \prod_matrx[53]="P=20.xx.52x LTE=1 TP=LE910_NA1_1G "
+  
+  //..
+  //Var.Assign \prod_matrx[&MAX_N_PROD-1.]="20.xx.52x, LTE=1 TP=LE910_NA1 "
+  
+  
+  // Here update the list of available products: &AV_PRODS used everywhere in the scripts
+  &rowstring=Var.STRing(\prod_matrx[0])
+  &ADD_PROD=STRing.SCANAndExtract("&rowstring","P=","")
+  &AV_PRODS="&ADD_PROD"
+  &ind=&ind+1.
+  WHILE (&ind<&MAX_N_PROD)
+  (
+    &rowstring=Var.STRing(\prod_matrx[&ind])
+    &ADD_PROD=STRing.SCANAndExtract("&rowstring","P=","")
+    &AV_PRODS="&AV_PRODS,&ADD_PROD"
+    &ind=&ind+1.
+  )
+  &AV_PRODS="&AV_PRODS,"
+

@@ -1,3 +1,10 @@
+sabanto-modem-config (1.0.0) focal; urgency=medium
+
+  * Use Telit m2mb binary for remote wake
+  * Add github actions workflow
+
+ -- gaynoraj19 <27155636+gaynoraj19@users.noreply.github.com>  Thu, 09 Oct 2025 17:37:49 -0500
+
 sabanto-modem-config (0.9.8) focal; urgency=medium
 
   * Save modem parameters to profile 0 and 1.

@@ -1,0 +1,257 @@
+/*Copyright (C) 2020 Telit Communications S.p.A. Italy - All Rights Reserved.*/
+/*    See LICENSE file in the project root for full license information.     */
+
+/**
+  @file
+    M2MB_main.c
+
+  @brief
+    The file contains the main user entry point of Appzone
+
+  @details
+  
+  @description
+    Sample application showcasing how to receive an SMS containing an AT command, process the AT command and send its answer to sender (configurable in sms_config.txt). A SIM card and antenna must be present. Debug prints on USB0
+
+  @version 
+    1.0.5
+  @note
+    Start of Appzone: Entry point
+    User code entry is in function M2MB_main()
+
+  @author
+	Roberta Galeazzo
+
+  @date
+    02/03/2017
+ */
+/* Include files ================================================================================*/
+#include <stdio.h>
+#include <string.h>
+
+#include "m2mb_types.h"
+
+#include "m2mb_os_types.h"
+#include "m2mb_os_api.h"
+
+#include "m2mb_fs_posix.h"
+
+#include "m2mb_sms.h"
+#include "m2mb_ati.h"
+
+#include "azx_log.h"
+#include "azx_utils.h"
+#include "azx_tasks.h"
+
+#include "app_cfg.h"
+
+#include "azx_pduEnc.h"
+#include "azx_pduDec.h"
+
+#include "callbacks.h"
+
+#include "at_utils.h"
+
+/* Local defines ================================================================================*/
+
+/* Local typedefs ===============================================================================*/
+
+/* Local statics ================================================================================*/
+
+M2MB_SMS_HANDLE h_sms_handle;
+
+UINT8 *pdu_provv, *pdu;
+INT32 pdulen;
+
+M2MB_OS_EV_HANDLE sms_evHandle = NULL;
+
+INT16 instanceID = 0; /*AT0, bound to UART by default config*/
+
+extern M2MB_SMS_STORAGE_E memory;
+extern const CHAR *storage[];
+INT32 smsParsingTaskID;
+
+/* Local function prototypes ====================================================================*/
+
+/* Static functions =============================================================================*/
+static void configure_modem_at_command(CHAR *atCmd)
+{
+  M2MB_RESULT_E     retVal;
+  CHAR cmd[100];
+  CHAR rsp[100];
+
+  snprintf(cmd, sizeof(cmd), "%s\r", atCmd);
+  retVal = send_async_at_command(instanceID, cmd, rsp, sizeof(rsp) - 1);
+  if (retVal == M2MB_RESULT_SUCCESS)
+		{
+			AZX_LOG_TRACE( "send_async_at_command() returned success value\r\n" );
+		}
+    else
+    {
+			AZX_LOG_ERROR( "send_async_at_command() returned failure value\r\n" );
+		  return;
+		}
+    AZX_LOG_DEBUG("AT command: %s answer is: %s\r\n", cmd, rsp);
+}
+/* Global functions =============================================================================*/
+
+/*-----------------------------------------------------------------------------------------------*/
+
+/***************************************************************************************************
+   \User Entry Point of Appzone
+
+   \param [in] Module Id
+
+   \details Main of the appzone user
+ **************************************************************************************************/
+void M2MB_main( int argc, char **argv )
+{
+  (void)argc;
+  (void)argv;
+
+  M2MB_OS_RESULT_E  osRes;
+
+  M2MB_RESULT_E     retVal;
+
+  M2MB_OS_EV_ATTR_HANDLE  evAttrHandle;
+  azx_sleep_ms(2000);
+
+  AZX_LOG_INIT();
+
+  AZX_LOG_INFO("Starting Remote Wake App version: %s built on: %s %s.\r\n",
+      VERSION, __DATE__, __TIME__);
+
+  azx_tasks_init();  //Init task
+
+  //Set AT commands interface
+  retVal = at_cmd_async_init(instanceID);
+  if ( retVal == M2MB_RESULT_SUCCESS )
+  {
+	  AZX_LOG_TRACE( "at_cmd_async_init() returned success value\r\n" );
+  }
+  else
+  {
+	  AZX_LOG_ERROR( "at_cmd_async_init() returned failure value\r\n" );
+	  return;
+  }
+  // Disable event monitor service
+  configure_modem_at_command("AT#ENAEVMONI=0");
+  // Erase SMS storage
+  configure_modem_at_command("AT+CMGD=1,4");
+
+  /* Init events handler */
+  osRes  = m2mb_os_ev_setAttrItem( &evAttrHandle, CMDS_ARGS(M2MB_OS_EV_SEL_CMD_CREATE_ATTR, NULL, M2MB_OS_EV_SEL_CMD_NAME, "sms_ev"));
+  osRes = m2mb_os_ev_init( &sms_evHandle, &evAttrHandle );
+
+  if ( osRes != M2MB_OS_SUCCESS )
+  {
+    m2mb_os_ev_setAttrItem( &evAttrHandle, M2MB_OS_EV_SEL_CMD_DEL_ATTR, NULL );
+    AZX_LOG_CRITICAL("m2mb_os_ev_init failed!\r\n");
+    return;
+  }
+  else
+  {
+    AZX_LOG_DEBUG("m2mb_os_ev_init success\r\n");
+  }
+
+
+
+  //Init SMS
+  retVal = m2mb_sms_init(&h_sms_handle, Sms_Callback, NULL);
+  if ( retVal == M2MB_RESULT_SUCCESS )
+  {
+    AZX_LOG_INFO( "m2mb_sms_init() succeeded\r\n");
+  }
+  else
+  {
+    AZX_LOG_ERROR("m2mb_sms_init()failed\r\n");
+    return;
+  }
+
+  //Enabling incoming SMS indication
+  retVal = m2mb_sms_enable_ind(h_sms_handle, M2MB_SMS_INCOMING_IND, 1);
+  if ( retVal == M2MB_RESULT_SUCCESS )
+  {
+    AZX_LOG_DEBUG("M2MB_SMS_INCOMING_IND indication enabled\r\n");
+  }
+  else
+  {
+    AZX_LOG_ERROR("M2MB_SMS_INCOMING_IND indication failed\r\n");
+  }
+
+  //Enable memory full
+  retVal = m2mb_sms_enable_ind(h_sms_handle, M2MB_SMS_MEMORY_FULL_IND, 1);
+  if ( retVal == M2MB_RESULT_SUCCESS )
+  {
+    AZX_LOG_DEBUG("M2MB_SMS_INCOMING_IND MEMORY FULL indication enabled\r\n");
+  }
+  else
+  {
+    AZX_LOG_ERROR("M2MB_SMS_INCOMING_IND MEMORY FULL indication failed\r\n");
+  }
+
+  //Set preferred memory (where SMS will be saved to) in this case SIM memory
+  memory = M2MB_SMS_STORAGE_ME; // M2MB_SMS_STORAGE_NONE does not work here...
+
+  retVal = m2mb_sms_set_storage(h_sms_handle, memory);
+  if ( retVal != M2MB_RESULT_SUCCESS )
+  {
+    AZX_LOG_ERROR( "Set storage to %d failed!\r\n", memory);
+  }
+  else
+  {
+    AZX_LOG_DEBUG("Storage set to %s\r\n", storage[memory]);
+  }
+
+/*
+  M2MB_SMS_DISCARD         -> incoming SMS will be discarded
+  M2MB_SMS_STORE_AND_ACK   -> incoming SMS will be stored and ack managed by Modem -> transactionID = -1, the SMS message will be stored
+  M2MB_SMS_FORWARD_AND_ACK -> incoming SMS will be forwarded to app and ack managed by Modem -> transactionID = -1, the SMS message will not be stored
+  M2MB_SMS_FORWARD_ONLY    -> incoming SMS will be forwarded to app and ack NOT managed by Modem, the SMS message will not be stored
+                             -> transactionID >= 0 to demand ack management to application logic.
+*/
+
+  // m2mb_sms_set_route: corresponding to +CNMI's <mt> parameter
+  // M2MB_SMS_STORE_AND_ACK: an SMS of any class will be stored on memory and ACK handled by modem
+  retVal = m2mb_sms_set_route(h_sms_handle, M2MB_SMS_CLASS_0, memory, M2MB_SMS_STORE_AND_ACK);
+  if ( retVal != M2MB_RESULT_SUCCESS )
+  {
+    AZX_LOG_ERROR( "Set route for M2MB_SMS_CLASS_0 setting failed!\r\n");
+  }
+  retVal = m2mb_sms_set_route(h_sms_handle, M2MB_SMS_CLASS_1, memory, M2MB_SMS_STORE_AND_ACK);
+  if ( retVal != M2MB_RESULT_SUCCESS )
+  {
+    AZX_LOG_ERROR( "Set route for M2MB_SMS_CLASS_1 setting failed!\r\n");
+  }
+
+  retVal = m2mb_sms_set_route(h_sms_handle, M2MB_SMS_CLASS_2, memory, M2MB_SMS_STORE_AND_ACK);
+  if ( retVal != M2MB_RESULT_SUCCESS )
+  {
+    AZX_LOG_ERROR( "Set route for M2MB_SMS_CLASS_2 setting failed!\r\n");
+  }
+
+  retVal = m2mb_sms_set_route(h_sms_handle, M2MB_SMS_CLASS_3, memory, M2MB_SMS_STORE_AND_ACK);
+  if ( retVal != M2MB_RESULT_SUCCESS )
+  {
+    AZX_LOG_ERROR( "Set route for M2MB_SMS_CLASS_3 setting failed!\r\n");
+  }
+
+  retVal = m2mb_sms_set_route(h_sms_handle, M2MB_SMS_CLASS_NONE, memory, M2MB_SMS_STORE_AND_ACK);
+  if ( retVal != M2MB_RESULT_SUCCESS )
+  {
+    AZX_LOG_ERROR( "Set route for M2MB_SMS_CLASS_NONE setting failed!\r\n");
+  }
+
+  //create task to handle SMS parsing
+	smsParsingTaskID = azx_tasks_createTask((char*) "SMSparsingTask", AZX_TASKS_STACK_M, 1, AZX_TASKS_MBOX_M, msgSMSparse);
+
+#ifdef LE910CXL
+  /* On Linux based LE910CX Linux, the end of M2MB_main causes the return of the application.
+  Add a loop to allow reception of messages*/
+  while(1)
+  {
+    azx_sleep_ms(1000);
+  }
+#endif
+}
+

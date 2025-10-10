@@ -1,0 +1,143 @@
+; --------------------------------------------------------------------------------
+; @Title: TRACE32 PowerView Default Startup Script (t32.cmm)
+; @Description: Default startup program for TRACE32
+; @Keywords: trace32, startup, setup, menu, toolbar, autostore, history
+; @Author: -
+; @Copyright: (C) 1989-2014 Lauterbach GmbH, licensed for use with TRACE32(R) only
+; --------------------------------------------------------------------------------
+; $Id: t32.cmm 7739 2014-10-07 12:47:09Z mschaeffner $
+
+
+; --------------------------------------------------------------------------------
+; --------------------------------------------------------------------------------
+;
+; This startup program can be modified according to your needs.
+; --------------------------------------------------------------------------------
+; --------------------------------------------------------------------------------
+
+entry &workspace &project &launchconfig &invokeme &prod_code &PicType &extra1 &extra2 &extra3
+//print "workspace=&workspace project=&project launchconfig=&launchconfig"
+PRINT "workspace=&workspace"
+PRINT "project=&project"
+PRINT "launchconfig=&launchconfig"
+PRINT "invokeme=&invokeme"
+PRINT "prod_code=&prod_code"
+PRINT "PicType=&PicType"
+PRINT "extra1=&extra1"
+PRINT "extra2=&extra2"
+PRINT "extra3=&extra3"
+
+IF "&workspace"==""
+(
+)
+ELSE
+(
+ DO &invokeme "&workspace/&project" "&prod_code" "&PicType" &extra1 &extra2 &extra3
+)
+
+
+; --------------------------------------------------------------------------------
+; Choose hex mode as default for input values
+; --------------------------------------------------------------------------------
+  RADIX Hex
+
+
+; --------------------------------------------------------------------------------
+; Add some extra buttons to the toolbar
+; --------------------------------------------------------------------------------
+
+;  MENU.ReProgram
+;  (
+;     ADD
+;     TOOLBAR
+;     (
+;        TOOLITEM  "Peripherals"      ":chip"     "Per.view"
+;        SEPARATOR
+;     )
+;  )
+
+
+; --------------------------------------------------------------------------------
+; choose a different TRACE32 menu file e.g. Japanese (default: english)
+; --------------------------------------------------------------------------------
+
+  IF LANGUAGE()!=""
+  (
+     LOCAL  &menuname
+     &menuname="~~/t32"+LANGUAGE()+".men"
+     IF OS.FILE(&menuname)
+        MENU.ReProgram &menuname
+  )
+
+
+; --------------------------------------------------------------------------------
+; Integrator Probes pulldown (Logic Analyzer)
+; --------------------------------------------------------------------------------
+
+  IF Integrator()
+  (
+     IF (I.ANALOG()>0)
+     (
+        IF (I.ANALOG()&1)==1
+        (
+         ; Reset MUX setup
+           I.PI_MUX_RESET
+
+         ; Define Addresslines
+           I.PI_MUX  amux.0   I.A0
+           I.PI_MUX  amux.1   I.A1
+           I.PI_MUX  amux.2   I.A2
+           I.PI_MUX  amux.3   I.A3
+           I.PI_MUX  amux.4   I.A4
+           I.PI_MUX  amux.5   I.A5
+           I.PI_MUX  amux.6   I.A6
+           I.PI_MUX  amux.7   I.A7
+           I.PI_MUX  amux.8   I.A8
+           I.PI_MUX  amux.9   I.A9
+           I.PI_MUX  amux.10  I.A10
+           I.PI_MUX  amux.11  I.A11
+
+         ; Programming of MUX setup
+           I.PI_MUX_PROGRAM
+
+         ; Menu-ADC-Trigger
+           MENU.ReProgram ~~/t32adc.men
+        )
+        ELSE
+        (
+           PRINT "Please connect AnalogProbe to connector A for trigger support!"
+        )
+     )
+     IF (I.USB()>0)
+     (
+        IF (I.USB()&1)==1
+        (
+           MENU.ReProgram ~~/menprobeusb_def.men
+        )
+        ELSE
+        (
+           PRINT "Please connect USB2 Probe to connector A/B!"
+        )
+     )
+  )
+
+
+; --------------------------------------------------------------------------------
+; Recall and define TRACE32 command history file
+; --------------------------------------------------------------------------------
+  AUTOSTORE , HISTORY BOOKMARK
+
+
+; --------------------------------------------------------------------------------
+; Start TRACE32 Welcome dialog               (activated since TRACE32 DVD 09/2014)
+; window is only displayed if not disabled by user
+; --------------------------------------------------------------------------------
+  IF !(ice()||fire())&&(VERSION.BUILD()>=57090.)
+     WELCOME.STARTUP
+
+
+ENDDO
+
+; --------------------------------------------------------------------------------
+; --------------------------------------------------------------------------------
+

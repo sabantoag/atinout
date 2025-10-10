@@ -1,0 +1,250 @@
+;/*******************************************************************
+;*
+;*       (C) TELIT - TELECOMMUNICATIONS 
+;*
+;*    FILE:          T32_AZ_start.cmm             CC_VERSION: v1.0
+;*
+;*    AUTHOR:        APA Telit semplified  - For starting AZ
+;*
+;*    DESCRIPTION:	 For starting debugging AZ with T32
+;*
+;*    DEVICE:		 XGOLD626
+;*
+;*    NOTE: This startup program can be modified according to your needs.
+;*
+;*
+;*******************************************************************/
+;This startup program can be modified according to your needs.
+
+//Define if project is built as Position Indipendent Code (PIC=1 for old FW)
+//Set the value in AppZone.cmm file in   "SET PIC" section
+GLOBAL &PIC
+
+//global variables read in AppZone.ini file
+GLOBAL &PRODUCT
+GLOBAL &ECLIPSE_PROJECT_PATH
+GLOBAL &MY_FONTSIZE
+
+//global variables got from Telit config files
+GLOBAL &DEBUG_BKP
+GLOBAL &DEBUG_MODE
+GLOBAL &TOOLCHAIN 
+GLOBAL &PLAT
+//directory created in auto based on T32 path set in T32marm_path.ini
+GLOBAL &t32tmpdir
+//internal globals
+GLOBAL &AV_PRODS
+GLOBAL &FS_AVAIL
+GLOBAL &AZ_PATH
+GLOBAL &SYS_PATH
+GLOBAL &PRODUCT
+GLOBAL &TELIT_PROD
+GLOBAL &DEBUG_FS_MODE
+GLOBAL &AZ_VERSION
+GLOBAL &NO_AXF
+// ************  FOR LTE **************************
+GLOBAL &LTEflag        //to select right board
+GLOBAL &lteDebugPath &ltePerFilePath &ltePerFile
+&SYS_PATH=OS.PSD()
+
+&DEBUG_FS_MODE=0
+&NO_AXF=0
+
+LOCAL &Res
+ENTRY &plugin_eclipse_prj &prod_in &PicType &fs_debug &extra1 &extra2
+
+IF ("&fs_debug"=="1")
+(
+  &DEBUG_FS_MODE=1
+)
+IF ("&extra1"=="1")
+(
+  // no need AXF FW: debug only AZ application
+  &NO_AXF=1
+)
+/////////////////////////////// initializations /////////////////////////
+&AZ_VERSION="3.0"
+&DEBUG_BKP="MOD_START"
+;&DEBUG_MODE="2G_ONLY"
+&AZ_PATH=OS.PPD()
+&LTEflag=0
+&PIC=0
+&FS_AVAIL="small,normal,large,"
+
+//in normal message area, not in DBG_AREA
+PRINT "======== START ========================="
+PRINT "plugin_eclipse_prj=&plugin_eclipse_prj"
+PRINT "prod_in=&prod_in"
+PRINT "PicType=&PicType"
+PRINT "fs_debug=&fs_debug"
+PRINT "extra1=&extra1"
+PRINT "extra2=&extra2"
+
+
+IF "&plugin_eclipse_prj"==""
+(
+  //no more args
+)
+ELSE
+(
+   IF (&PicType=="PIC")
+   (
+    &PIC=1
+   )
+   ELSE
+   (
+    &PIC=0
+   ) 
+)
+
+
+DO &AZ_PATH\AZ_products.cmm
+
+;choose hex mode for input
+ radix hex
+ 
+; ARM specifics
+if cpufamily()=="ARM"
+(
+  //winsmall.area.create DBG_AREA
+  DO &AZ_PATH\APPZONE\libexec\t32view.cmm init
+  winsmall.area.select DBG_AREA
+  area.clear
+  // ;create an area window to see progress on debug
+  // WINPOS 0.0 48.143 84. 20. 10. 10. DBG_AREA
+  // winsmall.area.create DBG_AREA 
+  // ;due to possible issues with Operating System: need to be repeated least 2 twice
+  // winsmall.area.view DBG_AREA
+  // winsmall.area.view DBG_AREA
+  // winsmall.area.view DBG_AREA
+  // winsmall.area.select DBG_AREA 
+  // area.clear 
+  // ;WAIT 1.s 
+  // ;WINPAN  0 -999. DBG_AREA
+  
+
+  DO &AZ_PATH\InitFromFile.cmm 0
+  IF ("&t32tmpdir"=="")
+  (
+    //maybe T32marm_path.ini is not rightly configured with the right path for T32
+
+    &t32tmpdir="&SYS_PATH\temp\AZtmp"
+    IF (!OS.DIR(&t32tmpdir))
+    (
+      //MKDIR &t32tmpdir
+      OS.Command mkdir &t32tmpdir
+    )
+  )
+  
+  if "&plugin_eclipse_prj"==""
+  (
+  )
+  else
+  (
+    //get parameter from SDK
+    &ECLIPSE_PROJECT_PATH=&plugin_eclipse_prj
+    &PRODUCT=&prod_in
+    IF ("&MY_FONTSIZE"=="")
+      &MY_FONTSIZE="small"
+    // Save all from SDK to a file ini to be in sync
+    DO &AZ_PATH\InitFromFile.cmm 3
+    DO &AZ_PATH\InitFromFile.cmm 1
+
+  )
+  
+  
+  //if any of the configuration has not been found, open dialog setting
+  IF (("&TELIT_PROD"=="")||("&ECLIPSE_PROJECT_PATH"=="")||("&MY_FONTSIZE"==""))
+    DO &AZ_PATH\Set_dialog.cmm  
+  
+  //In this phase prod_tool.cmm should been found in ECLIPSE_PROJECT_PATH
+  //which specifies platform and compilator (for instance... GCC or RVCTx)
+  IF (OS.FILE(&ECLIPSE_PROJECT_PATH\prod_tool.cmm)==FALSE())
+  (
+    DIALOG.MESSAGE "File &ECLIPSE_PROJECT_PATH\prod_tool.cmm not found"\
+                    " Set the right Project Path" //'&TELIT_PROD'
+    DO &AZ_PATH\Set_dialog.cmm
+  )
+  ELSE
+  (
+    DO &ECLIPSE_PROJECT_PATH\prod_tool.cmm
+  )
+  
+  //In this phase check if current platform etc... matches with the platform of the built project
+  DO &AZ_PATH/APPZONE/ProdPlatMatch.cmm
+  ENTRY &Res
+  //mismatch
+  IF (&Res==0)
+    DO &AZ_PATH\Set_dialog.cmm 
+  
+
+//PRINT %ERROR "PicType &PicType PIC &PIC"
+
+  IF "&PLAT"=="TELIT_2G_I"
+    PRINT %ERROR "2G Debug Session Started at " CLOCK.TIME()   
+  ELSE
+  (
+    IF (&LTEflag==1)
+      PRINT %ERROR "LTE Debug Session Started at " CLOCK.TIME()
+    ELSE
+      PRINT %ERROR "3G Debug Session Started at " CLOCK.TIME()
+  )
+  
+IF (&DEBUG_FS_MODE==1)
+  PRINT "FS LOAD   :"
+ELSE
+  PRINT "JTAG LOAD :"
+  
+  PRINT "---------------------------------------------------"
+  PRINT "VERSION   : << &AZ_VERSION >>"
+  PRINT "PROD      : << &TELIT_PROD : &PRODUCT >>"   
+  IF (STR.LEN("&ECLIPSE_PROJECT_PATH")>92.)
+  (
+    PRINT "PROJ PATH : << " STR.MID("&ECLIPSE_PROJECT_PATH",0.,92.)
+    PRINT "              " STR.MID("&ECLIPSE_PROJECT_PATH",92.,STR.LEN("&ECLIPSE_PROJECT_PATH")) " >>"
+  )
+  ELSE
+  (
+    PRINT "PROJ PATH : << &ECLIPSE_PROJECT_PATH >>" 
+  )   
+  IF (&LTEflag==1)
+  PRINT "PLATFORM  : << TELIT_LTE >>" 
+  ELSE
+  PRINT "PLATFORM  : << &PLAT >>" 
+  
+  PRINT "TOOLCHAIN : << &TOOLCHAIN >>"
+  IF ("&PicType"=="PIC")
+  PRINT "   ------- Position Indipendent Coding ----------  "
+  
+  PRINT "---------------------------------------------------"
+  PRINT "CPU FAMILY IS ARM !!"
+    ;Load IFX specific menu file for ARM
+   
+  //create the AppZone personalized menu for T32 window  
+  DO &AZ_PATH\AppZoneMenu.cmm
+  
+; SET PATHES TO THE SNAPSHOT_VIEW opened with Edit Files in AppZone Configurations
+path   &AZ_PATH
+path + &AZ_PATH/APPZONE
+path + &AZ_PATH/RTOS_support
+path + &AZ_PATH/XGOLD213
+path + &AZ_PATH/XGOLD626
+path + &AZ_PATH/XGOLD716  
+
+  DO &AZ_PATH/APPZONE/autostart.cmm
+  if "&plugin_eclipse_prj"==""
+  (
+    setup.breaktransfer OFF
+  ) 
+  else
+  (
+    setup.breaktransfer ON 
+  )  
+
+)
+
+Chdir &AZ_PATH
+
+
+;Recall and Define History File
+; autostore , history bookmark
