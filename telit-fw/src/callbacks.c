@@ -54,7 +54,9 @@
 
 
 #define GPIO_PIN "3"
-#define WAKE_WORD "TEST"
+#define WAKE_PREFIX "TEST:"
+#define OLD_WAKE_PREFIX "TEST"
+#define UUID_MAX_LEN 64
 #define DELETE_SMS 1
 #define SEND_ACK_NACK 1
 
@@ -295,101 +297,102 @@ void Sms_Callback(M2MB_SMS_HANDLE h, M2MB_SMS_IND_E sms_event, UINT16 resp_size,
 
 INT32 msgSMSparse(INT32 type, INT32 param1, INT32 param2)
 {
+  M2MB_RESULT_E retVal;
+  M2MB_OS_RESULT_E osRes;
+  M2MB_OS_TASK_HANDLE taskHandle = m2mb_os_taskGetId();
+  MEM_W name = 0;
+  CHAR atCom[100];
+  CHAR rsp[100];
+  CHAR *message = (CHAR*)param1;
+  CHAR *sender = (CHAR*)param2;
+  UINT32 smsIndex = (UINT32)type;
+  int gpio_retval = 0;
+  UINT8 *pdu_provv, *pdu;
+  INT32 pdulen;
+  CHAR uuid[UUID_MAX_LEN] = {0};
 
-M2MB_RESULT_E retVal;
-M2MB_OS_RESULT_E osRes;
-M2MB_OS_TASK_HANDLE taskHandle = m2mb_os_taskGetId();
-MEM_W  name = 0;
-CHAR atCom[100] ;
-CHAR rsp[100];
-CHAR *message;
-CHAR *sender;
-UINT32 smsIndex;
-int gpio_retval = 0;
-UINT8 *pdu_provv, *pdu;
-INT32 pdulen;
+  m2mb_os_taskGetItem(taskHandle, M2MB_OS_TASK_SEL_CMD_NAME, &name, NULL);
+  azx_sleep_ms(1000);
+  memset(atCom,0,sizeof(atCom));
 
-    message = (CHAR*)param1;
-    sender = (CHAR*)param2;
-    smsIndex = (UINT32)type;
+  if(strncmp(message, WAKE_PREFIX, strlen(WAKE_PREFIX)) == 0 ||
+    strcmp(message, OLD_WAKE_PREFIX) == 0)
+  {
+    if(strncmp(message, WAKE_PREFIX, strlen(WAKE_PREFIX)) == 0)
+    {
+      // Copy UUID portion if present
+      CHAR *uuid_start = message + strlen(WAKE_PREFIX);
+      if(strlen(uuid_start) > 0)
+      {
+        strncpy(uuid, uuid_start, UUID_MAX_LEN - 1);
+        uuid[UUID_MAX_LEN - 1] = '\0';
+      }
+      else
+      {
+        uuid[0] = '\0';  // safe default if UUID missing
+      }
+    }
+    else
+    {
+      // Message is exactly "TEST"
+      uuid[0] = '\0';
+    }
 
-
-	m2mb_os_taskGetItem( taskHandle, M2MB_OS_TASK_SEL_CMD_NAME, &name, NULL );
-	//AZX_LOG_INFO("\r\nInside \"%s\" user callback function. Received parameters from MAIN: %d %d %d\r\n", (char*) name, type, param1, param2);
-
-	azx_sleep_ms(1000);
-	memset(atCom,0,sizeof(atCom));
-  /*
-    Code additions
-  */
-  if(strncmp(message, WAKE_WORD, strlen(message)) == 0) {
     // Wake with GPIO
-	 gpio_retval = toggle_gpio();
-    //Send an SMS "ACK" or "NACK"
-	if(SEND_ACK_NACK) {
-		//strncpy(rsp, "ACK", sizeof(rsp) - 1);
-      if (gpio_retval == 0) {
-        strncpy(rsp, "ACK", sizeof(rsp) - 1);
+    gpio_retval = toggle_gpio();
+
+    // Send ACK or NACK
+    if(SEND_ACK_NACK)
+    {
+      if(gpio_retval == 0)
+      {
+        if(uuid[0] != '\0')
+          snprintf(rsp, sizeof(rsp), "ACK:%s", uuid);
+        else
+          snprintf(rsp, sizeof(rsp), "ACK");
       }
-      else {
-        strncpy(rsp, "NACK", sizeof(rsp) - 1);
+      else
+      {
+        if(uuid[0] != '\0')
+          snprintf(rsp, sizeof(rsp), "NACK:%s", uuid);
+        else
+          snprintf(rsp, sizeof(rsp), "NACK");
       }
-			pdu_provv = (UINT8*) m2mb_os_malloc(SMS_PDU_MAX_SIZE * sizeof (UINT8));
-			pdu = (UINT8*) m2mb_os_malloc(SMS_PDU_MAX_SIZE * sizeof (UINT8));
 
-			//sprintf(PhoneNumber, SENDER_NUMBER); //remember to store the phone number in international format
+      pdu_provv = (UINT8*) m2mb_os_malloc(SMS_PDU_MAX_SIZE * sizeof (UINT8));
+      pdu = (UINT8*) m2mb_os_malloc(SMS_PDU_MAX_SIZE * sizeof (UINT8));
+      memset(pdu_provv, 0x00, SMS_PDU_MAX_SIZE);
 
-			memset(pdu_provv, 0x00, SMS_PDU_MAX_SIZE);
-			//pdulen = azx_pdu_encode(PhoneNumber, (CHAR*) MESSAGE, pdu_provv, PDU_DCS_7);
-			pdulen = azx_pdu_encode(sender, (CHAR*) rsp, pdu_provv, PDU_DCS_7);
-			/* pdulen will be changed after the pdu is converted into a binary stream */
-			pdulen = azx_pdu_convertZeroPaddedHexIntoByte(pdu_provv, pdu, pdulen);
+      pdulen = azx_pdu_encode(sender, (CHAR*) rsp, pdu_provv, PDU_DCS_7);
+      pdulen = azx_pdu_convertZeroPaddedHexIntoByte(pdu_provv, pdu, pdulen);
 
-			//AZX_LOG_INFO("\r\nSending message <%s>...\r\n", MESSAGE);
-			retVal = m2mb_sms_send(h_sms_handle, pdulen, pdu);
-			if (retVal == M2MB_RESULT_SUCCESS)
-			{
-				AZX_LOG_INFO(" m2mb_sms_send() - succeeded\r\n");
-			}
-			else
-			{
-				AZX_LOG_ERROR("m2mb_sms_send() - failure\r\n");
-			}
+      retVal = m2mb_sms_send(h_sms_handle, pdulen, pdu);
+      if (retVal == M2MB_RESULT_SUCCESS)
+        AZX_LOG_INFO(" m2mb_sms_send() - succeeded\r\n");
+      else
+        AZX_LOG_ERROR("m2mb_sms_send() - failure\r\n");
 
-			/*Wait for sms send event to occur (released in Sms_Callback function) */
-			osRes = m2mb_os_ev_get(sms_evHandle, EV_SMS_SEND, M2MB_OS_EV_GET_ANY_AND_CLEAR, &curEvBits, M2MB_OS_MS2TICKS( 40000 ));
-			if (osRes == M2MB_OS_SUCCESS)
-			{
-				AZX_LOG_INFO( "SMS correctly sent!\r\n" );
-			}
-			else if (osRes == M2MB_OS_NO_EVENTS)
-			{
-				AZX_LOG_ERROR("SMS not sent! - exit for timeout\r\n" );
-			}
-			else
-			{
-				AZX_LOG_ERROR("SMS not sent! - unexpected value %d returned\r\n", osRes);
-			}
+      osRes = m2mb_os_ev_get(sms_evHandle, EV_SMS_SEND, M2MB_OS_EV_GET_ANY_AND_CLEAR, &curEvBits, M2MB_OS_MS2TICKS(40000));
+      if (osRes == M2MB_OS_SUCCESS)
+        AZX_LOG_INFO("SMS correctly sent!\r\n");
+      else
+        AZX_LOG_ERROR("SMS not sent! - timeout or error %d\r\n", osRes);
 
-		}
+      m2mb_os_free(pdu_provv);
+      m2mb_os_free(pdu);
+    }
   }
   // Delete all incoming SMS messages
-  if (DELETE_SMS){
+  if (DELETE_SMS)
+  {
     AZX_LOG_DEBUG("\r\nSMS %d can be deleted\r\n", smsIndex);
     m2mb_sms_delete(h_sms_handle, smsIndex);
-    osRes = m2mb_os_ev_get(sms_evHandle, EV_SMS_DELETE, M2MB_OS_EV_GET_ANY_AND_CLEAR, &curEvBits, M2MB_OS_MS2TICKS( 5000 ));
+    osRes = m2mb_os_ev_get(sms_evHandle, EV_SMS_DELETE, M2MB_OS_EV_GET_ANY_AND_CLEAR, &curEvBits, M2MB_OS_MS2TICKS(5000));
     if (osRes == M2MB_OS_SUCCESS)
-    {
-      AZX_LOG_INFO( "SMS correctly deleted!\r\n" );
-    }
-    else if (osRes == M2MB_OS_NO_EVENTS)
-    {
-      AZX_LOG_ERROR("SMS not deleted! - exit for timeout\r\n" );
-    }
+      AZX_LOG_INFO("SMS correctly deleted!\r\n");
+    else
+      AZX_LOG_ERROR("SMS not deleted! - timeout or error %d\r\n", osRes);
   }
-  /*
-    End code additions
-  */
 
   return 0;
 }
