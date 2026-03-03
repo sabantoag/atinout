@@ -1,3 +1,9 @@
+sabanto-modem-config (1.1.0) noble; urgency=medium
+
+  * EMB-141 Add UUID handling to modem text message
+
+ -- gaynoraj19 <27155636+gaynoraj19@users.noreply.github.com>  Mon, 02 Mar 2026 14:34:55 -0600
+
 sabanto-modem-config (1.0.0) focal; urgency=medium
 
   * Use Telit m2mb binary for remote wake
