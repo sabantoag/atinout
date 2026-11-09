@@ -1,3 +1,9 @@
+sabanto-modem-config (1.1.1) noble; urgency=medium
+
+  * Upload Telit firmware to GitHub releases instead of packaging it in the deb
+
+ -- Brian Moran <brian.moran@sabantoag.com>  Sun, 08 Nov 2026 23:14:21 -0600
+
 sabanto-modem-config (1.1.0) noble; urgency=medium
 
   * EMB-141 Add UUID handling to modem text message
